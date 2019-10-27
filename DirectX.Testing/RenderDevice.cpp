@@ -12,11 +12,15 @@ void Error(std::string&& err)
 
 struct SimpleVertex
 {
-	SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
+	SimpleVertex(float x, float y, float z, float r, float g, float b) : x(x), y(y), z(z), r(r), g(g), b(b) {}
 
 	float x;
 	float y;
 	float z;
+
+	float r;
+	float g;
+	float b;
 };
 
 RenderDevice::RenderDevice(MainWindow* window) : m_Window(window)
@@ -56,10 +60,10 @@ bool RenderDevice::Initialise()
 	// Create vertex buffer
 	SimpleVertex vertices[] =
 	{
-		SimpleVertex(-1.0f, 1.0f, 0.5f),
-		SimpleVertex(1.0f, 1.0f, 0.5f),
-		SimpleVertex(1.0f, -1.0f, 0.5f),
-		SimpleVertex(-1.0f, -1.0f, 0.5f),
+		SimpleVertex(-1.0f, 1.0f, 0.5f, 1.0f, 0.0f, 0.0f),
+		SimpleVertex(1.0f, 1.0f, 0.5f, 0.0f, 1.0f, 0.0f),
+		SimpleVertex(1.0f, -1.0f, 0.5f, 0.0f, 0.0f, 1.0f),
+		SimpleVertex(-1.0f, -1.0f, 0.5f, 1.0f, 1.0f, 0.0f),
 	};
 
 	WORD indices[] =
@@ -262,6 +266,7 @@ bool RenderDevice::CreateVertexShader()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOUR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
