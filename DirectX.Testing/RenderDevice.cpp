@@ -35,8 +35,6 @@ bool RenderDevice::Initialise()
 	if (!CreateRenderTargetView())
 		return false;
 
-	HRESULT hr;
-
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)800;
@@ -48,114 +46,65 @@ bool RenderDevice::Initialise()
 	m_DeviceContext->RSSetViewports(1, &vp);
 
 	// Create vertex shader
-	std::ifstream vertexFile("../x64/Debug/VertexShader.cso", std::fstream::in | std::fstream::binary);
-	if (!vertexFile.is_open())
-	{
-		Error("Could not read VertexShader.cso");
+	if (!CreateVertexShader())
 		return false;
-	}
-
-	vertexFile.seekg(0, vertexFile.end);
-	int vertexsize = (int)vertexFile.tellg();
-	vertexFile.seekg(0, vertexFile.beg);
-
-	char* vertexbuffer = new char[vertexsize];
-	vertexFile.read(vertexbuffer, vertexsize);
-
-	hr = m_Device->CreateVertexShader(
-		vertexbuffer,
-		vertexsize,
-		nullptr,
-		&m_VertexShader);
-
-	if (FAILED(hr))
-	{
-		Error("CreateVertexShader fucking exploded");
-		return false;
-	}
 
 	// Create pixel shader
-	std::ifstream pixelFile("../x64/Debug/PixelShader.cso", std::fstream::in | std::fstream::binary);
-	if (!pixelFile.is_open())
-	{
-		Error("Could not read PixelShader.cso");
+	if (!CreatePixelShader())
 		return false;
-	}
-
-	pixelFile.seekg(0, pixelFile.end);
-	int pixelsize = (int)pixelFile.tellg();
-	pixelFile.seekg(0, pixelFile.beg);
-
-	char* pixelbuffer = new char[pixelsize];
-	pixelFile.read(pixelbuffer, pixelsize);
-
-	hr = m_Device->CreatePixelShader(
-		pixelbuffer,
-		pixelsize,
-		nullptr,
-		&m_PixelShader);
-
-	if (FAILED(hr))
-	{
-		Error("CreatePixelShader fucking exploded");
-		return false;
-	}
-
-	// Define the input layout
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	UINT numElements = ARRAYSIZE(layout);
-
-	ID3D11InputLayout* vertexLayout = nullptr;
-	hr = m_Device->CreateInputLayout(layout, numElements, vertexbuffer,
-		vertexsize, &vertexLayout);
-
-	if (FAILED(hr))
-	{
-		Error("CreateInputLayout fucking exploded");
-		return false;
-	}
-
-	m_DeviceContext->IASetInputLayout(vertexLayout);
-
-	struct SimpleVertex
-	{
-		SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
-
-		float x;
-		float y;
-		float z;
-	};
 
 	// Create vertex buffer
 	SimpleVertex vertices[] =
 	{
-		SimpleVertex(0.0f, 0.5f, 0.5f),
-		SimpleVertex(0.5f, -0.5f, 0.5f),
-		SimpleVertex(-0.5f, -0.5f, 0.5f),
+		SimpleVertex(-1.0f, 1.0f, 0.5f),
+		SimpleVertex(1.0f, 1.0f, 0.5f),
+		SimpleVertex(1.0f, -1.0f, 0.5f),
+		SimpleVertex(-1.0f, -1.0f, 0.5f),
 	};
 
-	D3D11_BUFFER_DESC bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * 3;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
+	WORD indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
 
-	D3D11_SUBRESOURCE_DATA InitData = {};
-	InitData.pSysMem = vertices;
+	// Vertex duffer description
+	D3D11_BUFFER_DESC vbd = {};
+	vbd.Usage = D3D11_USAGE_DEFAULT;
+	vbd.ByteWidth = sizeof(vertices);
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vInitData = {};
+	vInitData.pSysMem = vertices;
 
 	ID3D11Buffer* vertexBuffer = nullptr;
-	hr = m_Device->CreateBuffer(&bd, &InitData, &vertexBuffer);
+	HRESULT hr = m_Device->CreateBuffer(&vbd, &vInitData, &vertexBuffer);
 	if (FAILED(hr))
-		return hr;
+		return false;
 
 	// Set vertex buffer
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 	m_DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+	// Index buffer description
+	D3D11_BUFFER_DESC ibd = {};
+	ibd.Usage = D3D11_USAGE_DEFAULT;
+	ibd.ByteWidth = sizeof(indices);
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA iInitData = {};
+	iInitData.pSysMem = indices;
+
+	ID3D11Buffer* indexBuffer = nullptr;
+	hr = m_Device->CreateBuffer(&ibd, &iInitData, &indexBuffer);
+	if (FAILED(hr))
+		return false;
+
+	// Set vertex buffer
+	m_DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 	// Set primitive topology
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -171,7 +120,8 @@ void RenderDevice::Render()
 	// Render bullshit
 	m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
 	m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
-	m_DeviceContext->Draw(3, 0);
+	//m_DeviceContext->Draw(3, 0);
+	m_DeviceContext->DrawIndexed(6, 0, 0);
 
 	// Update window
 	m_SwapChain->Present(0, 0);
@@ -249,6 +199,8 @@ bool RenderDevice::CreateSwapChain()
 		return false;
 	}
 
+	dxgiFactory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_WINDOW_CHANGES);
+
 	dxgiDevice->Release();
 	dxgiAdapter->Release();
 	dxgiFactory->Release();
@@ -316,6 +268,8 @@ bool RenderDevice::CreateVertexShader()
 
 	ID3D11InputLayout* vertexLayout = nullptr;
 	m_Device->CreateInputLayout(layout, numElements, vertexbuffer, vertexsize, &vertexLayout);
+
+	m_DeviceContext->IASetInputLayout(vertexLayout);
 
 	return true;
 }

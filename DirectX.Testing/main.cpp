@@ -18,7 +18,7 @@ int main(int argc, char**)
 
 	// Create window
 	MainWindow window;
-	if (!window.Create()) 
+	if (!window.Create())
 		return -1;
 
 	// Rendering device
