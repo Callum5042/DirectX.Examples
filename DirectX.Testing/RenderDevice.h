@@ -2,6 +2,7 @@
 
 #include "MainWindow.h"
 #include <d3d11.h>
+#include <SDL_events.h>
 
 class RenderDevice
 {
@@ -9,8 +10,9 @@ public:
 	RenderDevice(MainWindow* window);
 
 	bool Initialise();
-
 	void Render();
+
+	void OnKeyDown(SDL_KeyboardEvent e);
 
 private:
 	MainWindow* m_Window = nullptr;

@@ -25,7 +25,7 @@ int main(int argc, char**)
 	RenderDevice renderDevice(&window);
 	if (!renderDevice.Initialise())
 		return -1;
-	
+
 	// Main loop
 	SDL_Event e;
 	bool running = true;
@@ -37,6 +37,10 @@ int main(int argc, char**)
 			{
 			case SDL_QUIT:
 				running = false;
+				break;
+
+			case SDL_KEYDOWN:
+				renderDevice.OnKeyDown(e.key);
 				break;
 			}
 		}

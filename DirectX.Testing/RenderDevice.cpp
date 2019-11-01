@@ -5,22 +5,44 @@
 #include <SDL_messagebox.h>
 #include <fstream>
 
+#include <DirectXMath.h>
+using namespace DirectX;
+
+ID3D11Buffer* g_pConstantBuffer = nullptr;
+DirectX::XMMATRIX g_World;
+DirectX::XMMATRIX g_View;
+DirectX::XMMATRIX g_Projection;
+
 void Error(std::string&& err)
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", err.c_str(), nullptr);
 }
 
+struct Colour
+{
+	Colour(float r, float g, float b) : r(r), g(g), b(b) {}
+	
+	float r;
+	float g;
+	float b;
+};  
+
 struct SimpleVertex
 {
-	SimpleVertex(float x, float y, float z, float r, float g, float b) : x(x), y(y), z(z), r(r), g(g), b(b) {}
+	SimpleVertex(float x, float y, float z, Colour colour) : x(x), y(y), z(z), colour(colour) {}
 
 	float x;
 	float y;
 	float z;
 
-	float r;
-	float g;
-	float b;
+	Colour colour;
+};
+
+struct ConstantBuffer
+{
+	XMMATRIX mWorld;
+	XMMATRIX mView;
+	XMMATRIX mProjection;
 };
 
 RenderDevice::RenderDevice(MainWindow* window) : m_Window(window)
@@ -60,10 +82,10 @@ bool RenderDevice::Initialise()
 	// Create vertex buffer
 	SimpleVertex vertices[] =
 	{
-		SimpleVertex(-1.0f, 1.0f, 0.5f, 1.0f, 0.0f, 0.0f),
-		SimpleVertex(1.0f, 1.0f, 0.5f, 0.0f, 1.0f, 0.0f),
-		SimpleVertex(1.0f, -1.0f, 0.5f, 0.0f, 0.0f, 1.0f),
-		SimpleVertex(-1.0f, -1.0f, 0.5f, 1.0f, 1.0f, 0.0f),
+		SimpleVertex(-1.0f, 1.0f, 0.5f, Colour(1.0f, 0.0f, 0.0f)),
+		SimpleVertex(1.0f, 1.0f, 0.5f, Colour(0.0f, 1.0f, 0.0f)),
+		SimpleVertex(1.0f, -1.0f, 0.5f, Colour(0.0f, 0.0f, 1.0f)),
+		SimpleVertex(-1.0f, -1.0f, 0.5f, Colour(1.0f, 1.0f, 0.0f)),
 	};
 
 	WORD indices[] =
@@ -113,6 +135,32 @@ bool RenderDevice::Initialise()
 	// Set primitive topology
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	// Constant buffer
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(ConstantBuffer);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	hr = m_Device->CreateBuffer(&bd, nullptr, &g_pConstantBuffer);
+	if (FAILED(hr))
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "CreateBuffer failed", nullptr);
+		return false;
+	}
+
+	g_World = XMMatrixIdentity();
+	g_World = XMMatrixScaling(50.0f, 50.0f, 1.0f);
+
+	// Initialize the view matrix
+	XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
+	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	g_View = XMMatrixLookAtLH(Eye, At, Up);
+
+	// Initialize the projection matrix
+	g_Projection = XMMatrixOrthographicLH(800.0f, 600.0f, 1.0f, 100.0f);
+	// g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, 800 / (FLOAT)600, 0.01f, 100.0f);
+
 	return true;
 }
 
@@ -121,10 +169,16 @@ void RenderDevice::Render()
 	static const float Blue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&Blue));
 
+	ConstantBuffer cb;
+	cb.mWorld = XMMatrixTranspose(g_World);
+	cb.mView = XMMatrixTranspose(g_View);
+	cb.mProjection = XMMatrixTranspose(g_Projection);
+	m_DeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+
 	// Render bullshit
 	m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
+	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
-	//m_DeviceContext->Draw(3, 0);
 	m_DeviceContext->DrawIndexed(6, 0, 0);
 
 	// Update window
@@ -308,4 +362,29 @@ bool RenderDevice::CreatePixelShader()
 	}
 
 	return true;
+}
+
+void RenderDevice::OnKeyDown(SDL_KeyboardEvent e)
+{
+	if (e.keysym.scancode == SDL_SCANCODE_RIGHT)
+	{  
+		std::cout << "Right\n";
+		g_World = g_World * XMMatrixTranslation(5.0f, 0.0f, 0.0f);
+	}
+	else if (e.keysym.scancode == SDL_SCANCODE_LEFT)
+	{
+		std::cout << "Left\n";
+		g_World = g_World * XMMatrixTranslation(-5.0f, 0.0f, 0.0f);
+	}
+
+	if (e.keysym.scancode == SDL_SCANCODE_UP)
+	{
+		std::cout << "Right\n";
+		g_World = g_World * XMMatrixTranslation(0.0f, 5.0f, 0.0f);
+	}
+	else if (e.keysym.scancode == SDL_SCANCODE_DOWN)
+	{
+		std::cout << "Left\n";
+		g_World = g_World * XMMatrixTranslation(0.0f, -5.0f, 0.0f);
+	}
 }
