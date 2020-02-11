@@ -8,8 +8,13 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
+#include <DDSTextureLoader.h>
+
+#include "GameObject.h"
+
 ID3D11Buffer* g_pConstantBuffer = nullptr;
 DirectX::XMMATRIX g_World;
+DirectX::XMMATRIX g_World2;
 DirectX::XMMATRIX g_View;
 DirectX::XMMATRIX g_Projection;
 
@@ -18,24 +23,16 @@ void Error(std::string&& err)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", err.c_str(), nullptr);
 }
 
-struct Colour
+struct TextureVertex
 {
-	Colour(float r, float g, float b) : r(r), g(g), b(b) {}
-	
-	float r;
-	float g;
-	float b;
-};  
-
-struct SimpleVertex
-{
-	SimpleVertex(float x, float y, float z, Colour colour) : x(x), y(y), z(z), colour(colour) {}
+	TextureVertex(float x, float y, float z, float u, float v) : x(x), y(y), z(z), u(u), v(v) {}
 
 	float x;
 	float y;
 	float z;
 
-	Colour colour;
+	float u;
+	float v;
 };
 
 struct ConstantBuffer
@@ -71,6 +68,25 @@ bool RenderDevice::Initialise()
 	vp.TopLeftY = 0;
 	m_DeviceContext->RSSetViewports(1, &vp);
 
+	// Raster
+	D3D11_RASTERIZER_DESC rasterizerState;
+	ZeroMemory(&rasterizerState, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerState.AntialiasedLineEnable = false;
+	rasterizerState.CullMode = D3D11_CULL_NONE; // D3D11_CULL_FRONT or D3D11_CULL_NONE D3D11_CULL_BACK
+	rasterizerState.FillMode = D3D11_FILL_SOLID; // D3D11_FILL_SOLID  D3D11_FILL_WIREFRAME
+	rasterizerState.DepthBias = 0;
+	rasterizerState.DepthBiasClamp = 0.0f;
+	rasterizerState.DepthClipEnable = true;
+	rasterizerState.FrontCounterClockwise = false;
+	rasterizerState.MultisampleEnable = false;
+	rasterizerState.ScissorEnable = false;
+	rasterizerState.SlopeScaledDepthBias = 0.0f;
+
+	ID3D11RasterizerState* m_pRasterState;
+	HRESULT result = m_Device->CreateRasterizerState(&rasterizerState, &m_pRasterState);
+	m_DeviceContext->RSSetState(m_pRasterState);
+
 	// Create vertex shader
 	if (!CreateVertexShader())
 		return false;
@@ -79,13 +95,12 @@ bool RenderDevice::Initialise()
 	if (!CreatePixelShader())
 		return false;
 
-	// Create vertex buffer
-	SimpleVertex vertices[] =
+	TextureVertex vertices[] =
 	{
-		SimpleVertex(-1.0f, 1.0f, 0.5f, Colour(1.0f, 0.0f, 0.0f)),
-		SimpleVertex(1.0f, 1.0f, 0.5f, Colour(0.0f, 1.0f, 0.0f)),
-		SimpleVertex(1.0f, -1.0f, 0.5f, Colour(0.0f, 0.0f, 1.0f)),
-		SimpleVertex(-1.0f, -1.0f, 0.5f, Colour(1.0f, 1.0f, 0.0f)),
+		TextureVertex(-1.0f, 1.0f, 0.5f, 0.0f, 0.0f),
+		TextureVertex(1.0f, 1.0f, 0.5f, 1.0f, 0.0f),
+		TextureVertex(1.0f, -1.0f, 0.5f, 1.0f, 1.0f),
+		TextureVertex(-1.0f, -1.0f, 0.5f, 0.0f, 1.0f),
 	};
 
 	WORD indices[] =
@@ -110,7 +125,7 @@ bool RenderDevice::Initialise()
 		return false;
 
 	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
+	UINT stride = sizeof(TextureVertex);
 	UINT offset = 0;
 	m_DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
@@ -148,18 +163,29 @@ bool RenderDevice::Initialise()
 		return false;
 	}
 
-	g_World = XMMatrixIdentity();
-	g_World = XMMatrixScaling(50.0f, 50.0f, 1.0f);
+	// Create texture
+	hr = CreateDDSTextureFromFile(m_Device, L"textures/castle_wall/castle_wall_slates_diff_1k.dds", nullptr, &m_Texture);
+	if (FAILED(hr))
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "CreateDDSTextureFromFile failed", nullptr);
+		return false;
+	}
+	
+	// Position
+	g_World = XMMatrixScaling(50.0f , 50.0f, 1.0f);
+	g_World *= XMMatrixTranslation(400.0f, 300.0f, 0.0f);
+
+	g_World2 = XMMatrixScaling(50.0f , 50.0f, 1.0f);
+	g_World2 *= XMMatrixTranslation(50.0f, 50.0f, 0.0f);
 
 	// Initialize the view matrix
-	XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	g_View = XMMatrixLookAtLH(Eye, At, Up);
+	XMVECTOR eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
+	XMVECTOR at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	g_View = XMMatrixLookAtLH(eye, at, up);
 
 	// Initialize the projection matrix
-	g_Projection = XMMatrixOrthographicLH(800.0f, 600.0f, 1.0f, 100.0f);
-	// g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, 800 / (FLOAT)600, 0.01f, 100.0f);
+	g_Projection = XMMatrixOrthographicOffCenterLH(0.0f, 800.0f, 600.0f, 0.0f, 1.0f, 100.0f);
 
 	return true;
 }
@@ -169,16 +195,27 @@ void RenderDevice::Render()
 	static const float Blue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&Blue));
 
+	// Set pipeline
+	m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
+	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+	m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
+	m_DeviceContext->PSSetShaderResources(0, 1, &m_Texture);
+
+	// Renddeeeer
 	ConstantBuffer cb;
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
 	m_DeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
-	// Render bullshit
-	m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
-	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-	m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
+	m_DeviceContext->DrawIndexed(6, 0, 0);
+
+	// Renddeeeer
+	cb.mWorld = XMMatrixTranspose(g_World2);
+	cb.mView = XMMatrixTranspose(g_View);
+	cb.mProjection = XMMatrixTranspose(g_Projection);
+	m_DeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+
 	m_DeviceContext->DrawIndexed(6, 0, 0);
 
 	// Update window
@@ -290,7 +327,7 @@ bool RenderDevice::CreateRenderTargetView()
 
 bool RenderDevice::CreateVertexShader()
 {
-	std::ifstream vertexFile("../x64/Debug/VertexShader.cso", std::fstream::in | std::fstream::binary);
+	std::ifstream vertexFile("VertexShader.cso", std::fstream::in | std::fstream::binary);
 	if (!vertexFile.is_open())
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Could not read VertexShader.cso", nullptr);
@@ -320,7 +357,7 @@ bool RenderDevice::CreateVertexShader()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOUR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
@@ -335,7 +372,7 @@ bool RenderDevice::CreateVertexShader()
 
 bool RenderDevice::CreatePixelShader()
 {
-	std::ifstream pixelFile("../x64/Debug/PixelShader.cso", std::fstream::in | std::fstream::binary);
+	std::ifstream pixelFile("PixelShader.cso", std::fstream::in | std::fstream::binary);
 	if (!pixelFile.is_open())
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Could not read PixelShader.cso", nullptr);
@@ -368,23 +405,26 @@ void RenderDevice::OnKeyDown(SDL_KeyboardEvent e)
 {
 	if (e.keysym.scancode == SDL_SCANCODE_RIGHT)
 	{  
-		std::cout << "Right\n";
 		g_World = g_World * XMMatrixTranslation(5.0f, 0.0f, 0.0f);
 	}
 	else if (e.keysym.scancode == SDL_SCANCODE_LEFT)
 	{
-		std::cout << "Left\n";
 		g_World = g_World * XMMatrixTranslation(-5.0f, 0.0f, 0.0f);
 	}
 
 	if (e.keysym.scancode == SDL_SCANCODE_UP)
 	{
-		std::cout << "Right\n";
-		g_World = g_World * XMMatrixTranslation(0.0f, 5.0f, 0.0f);
+		g_World = g_World * XMMatrixTranslation(0.0f, -5.0f, 0.0f);
 	}
 	else if (e.keysym.scancode == SDL_SCANCODE_DOWN)
 	{
-		std::cout << "Left\n";
-		g_World = g_World * XMMatrixTranslation(0.0f, -5.0f, 0.0f);
+		g_World = g_World * XMMatrixTranslation(0.0f, 5.0f, 0.0f);
 	}
+}
+
+void RenderDevice::OnMouseMove(SDL_MouseMotionEvent e)
+{
+	/*g_World = XMMatrixIdentity();
+	g_World = g_World * XMMatrixScaling(50.0f, 50.0f, 1.0f);
+	g_World = g_World * XMMatrixTranslation(e.x, e.y, 0.0f);*/
 }

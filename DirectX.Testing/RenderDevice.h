@@ -13,6 +13,7 @@ public:
 	void Render();
 
 	void OnKeyDown(SDL_KeyboardEvent e);
+	void OnMouseMove(SDL_MouseMotionEvent e);
 
 private:
 	MainWindow* m_Window = nullptr;
@@ -24,6 +25,9 @@ private:
 
 	ID3D11VertexShader* m_VertexShader = nullptr;
 	ID3D11PixelShader* m_PixelShader = nullptr;
+
+	ID3D11ShaderResourceView* m_Texture = nullptr;
+	ID3D11SamplerState* m_SamplerLinear = nullptr;
 
 	bool CreateDevice();
 	bool CreateSwapChain();

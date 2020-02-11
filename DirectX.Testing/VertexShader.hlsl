@@ -8,15 +8,14 @@ cbuffer ConstantBuffer : register(b0)
 	matrix Projection;
 }
 
-VS_OUTPUT main(float4 Pos : POSITION, float3 colour : COLOUR)
+VS_OUTPUT main(float4 Pos : POSITION, float2 tex : TEXCOORD0)
 {
-	VS_OUTPUT output = (VS_OUTPUT)0;
-	//output.Pos = Pos;
+	VS_OUTPUT output;
 	
 	output.Pos = mul(Pos, World);
 	output.Pos = mul(output.Pos, View);
 	output.Pos = mul(output.Pos, Projection);
 
-	output.Colour = float4(colour, 1.0f);
+	output.Texture = tex;
 	return output;
 }
