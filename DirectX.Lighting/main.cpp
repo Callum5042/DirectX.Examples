@@ -8,6 +8,14 @@ class Application : public Engine, public Events::WindowListener
 public:
 	Application() = default;
 
+	bool OnInitialise() override
+	{
+		GetShader()->CreateVertexShader("VertexShader.cso");
+		GetShader()->CreatePixelShader("PixelShader.cso");
+
+		return true;
+	}
+
 	void OnUpdate() override
 	{
 

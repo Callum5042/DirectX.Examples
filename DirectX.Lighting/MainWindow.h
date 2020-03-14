@@ -12,6 +12,8 @@ public:
 	bool Create(std::string&& title, int width, int height);
 	void Destroy();
 
+	inline SDL_Window* GetWindow() const { return m_WindowHandle; }
+
 private:
 	SDL_Window* m_WindowHandle = nullptr;
 };
