@@ -6,13 +6,18 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
+ID3D11Texture2D* g_pDepthStencil = nullptr;
+ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
+
 struct SimpleVertex
 {
-	SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
+	SimpleVertex(float x, float y, float z, XMFLOAT3 Normal) : x(x), y(y), z(z), Normal(Normal) {}
 
 	float x;
 	float y;
 	float z;
+
+	XMFLOAT3 Normal;
 };
 
 struct ConstantBuffer
@@ -20,6 +25,8 @@ struct ConstantBuffer
 	XMMATRIX mWorld;
 	XMMATRIX mView;
 	XMMATRIX mProjection;
+	XMFLOAT4 vLightDir[2];
+	XMFLOAT4 vLightColor[2];
 };
 
 ID3D11Buffer* g_pConstantBuffer = nullptr;
@@ -49,19 +56,101 @@ bool RenderDevice::Initialise()
 	// Raster
 	SetRasterState();
 
+	// Create depth stencil texture
+	D3D11_TEXTURE2D_DESC descDepth = {};
+	descDepth.Width = 800;
+	descDepth.Height = 600;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	HRESULT hr = m_Device->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
+	if (FAILED(hr))
+		return hr;
+
+	// Create the depth stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+	hr = m_Device->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
+	if (FAILED(hr))
+		return hr;
+
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, g_pDepthStencilView);
+
 	// Create vertex buffer
+	/*SimpleVertex vertices[] =
+	{
+		SimpleVertex(-0.5f, 0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
+		SimpleVertex(0.5f, 0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
+		SimpleVertex(0.5f, -0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
+		SimpleVertex(-0.5f, -0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
+	};*/
+
+	/*WORD indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};*/
+
 	SimpleVertex vertices[] =
 	{
-		SimpleVertex(-0.5f, 0.5f, 0.0f),
-		SimpleVertex(0.5f, 0.5f, 0.0f),
-		SimpleVertex(0.5f, -0.5f, 0.0f),
-		SimpleVertex(-0.5f, -0.5f, 0.0f),
+		{ -1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ 1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ 1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ -1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
+
+		{ -1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ 1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ 1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ -1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
+
+		{ -1.0f, -1.0f, 1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ -1.0f, -1.0f, -1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ -1.0f, 1.0f, -1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ -1.0f, 1.0f, 1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+
+		{ 1.0f, -1.0f, 1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ 1.0f, -1.0f, -1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ 1.0f, 1.0f, -1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ 1.0f, 1.0f, 1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
+
+		{ -1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ 1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ 1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ -1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
+
+		{ -1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ 1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ 1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ -1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
 	};
 
 	WORD indices[] =
 	{
-		0, 1, 2,
-		0, 2, 3
+		3,1,0,
+		2,1,3,
+
+		6,4,5,
+		7,4,6,
+
+		11,9,8,
+		10,9,11,
+
+		14,12,13,
+		15,12,14,
+
+		19,17,16,
+		18,17,19,
+
+		22,20,21,
+		23,20,22
 	};
 
 	// Vertex duffer description
@@ -75,7 +164,7 @@ bool RenderDevice::Initialise()
 	vInitData.pSysMem = vertices;
 
 	ID3D11Buffer* vertexBuffer = nullptr; 
-	HRESULT hr = m_Device->CreateBuffer(&vbd, &vInitData, &vertexBuffer);
+	hr = m_Device->CreateBuffer(&vbd, &vInitData, &vertexBuffer);
 	if (FAILED(hr))
 		return false;
 
@@ -121,7 +210,7 @@ bool RenderDevice::Initialise()
 	// Perspective View
 	g_World = XMMatrixIdentity();
 	
-	XMVECTOR eye = XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f);
+	XMVECTOR eye = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
 	XMVECTOR at = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	g_View = XMMatrixLookAtLH(eye, at, up);
@@ -275,6 +364,7 @@ void RenderDevice::Render()
 	// Clear window to blue
 	static const float Blue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&Blue));
+	m_DeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	// hing
 	static float t = 0.0f;
@@ -284,22 +374,44 @@ void RenderDevice::Render()
 		timeStart = timeCur;
 	t = (timeCur - timeStart) / 1000.0f;
 
-	//
 	// Animate the cube
-	//
 	g_World = XMMatrixRotationY(t);
 
+	// Setup our lighting parameters
+    XMFLOAT4 vLightDirs[2] =
+    {
+        XMFLOAT4( -0.577f, 0.577f, -0.577f, 1.0f ),
+        XMFLOAT4( 0.0f, 0.0f, -1.0f, 1.0f ),
+    };
+
+    XMFLOAT4 vLightColors[2] =
+    {
+        XMFLOAT4( 0.5f, 0.5f, 0.5f, 1.0f ),
+        XMFLOAT4( 0.5f, 0.5f, 0.5f, 1.0f )
+    };
+
 	// Shader thing
-	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+
+	/*XMMATRIX mRotate = XMMatrixRotationY(-2.0f * t);
+	XMVECTOR vLightDir = XMLoadFloat4(&vLightDirs[1]);
+	vLightDir = XMVector3Transform(vLightDir, mRotate);
+	XMStoreFloat4(&vLightDirs[1], vLightDir);*/
 
 	ConstantBuffer cb;
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
+	cb.vLightDir[0] = vLightDirs[0];
+	cb.vLightDir[1] = vLightDirs[1];
+	cb.vLightColor[0] = vLightColors[0];
+	cb.vLightColor[1] = vLightColors[1];
+
+	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+	m_DeviceContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	m_DeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	// Render triangle
-	m_DeviceContext->DrawIndexed(6, 0, 0);
+	m_DeviceContext->DrawIndexed(36, 0, 0);
 
 	// Update window
 	m_SwapChain->Present(0, 0);

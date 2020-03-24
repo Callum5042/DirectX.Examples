@@ -1,20 +1,14 @@
 
 #include "Header.hlsli"
 
-cbuffer ConstantBuffer : register(b0)
+PS_INPUT main(VS_INPUT input)
 {
-	matrix World;
-	matrix View;
-	matrix Projection;
-}
+	PS_INPUT output;
 
-VS_OUTPUT main(float4 pos : POSITION)
-{
-	VS_OUTPUT output;
-
-	output.Pos = mul(pos, World);
+	output.Pos = mul(input.Pos, World);
 	output.Pos = mul(output.Pos, View);
 	output.Pos = mul(output.Pos, Projection);
+	output.Norm = mul(float4(input.Norm, 1), World).xyz;
 
 	return output;
 }

@@ -1,12 +1,22 @@
 
-//Texture2D textureDiffuse : register(t0);
-//
-//SamplerState linearSampler
-//{
-//	Filter = MIG_MAG_MIP_LINEAR;
-//};
+cbuffer ConstantBuffer : register(b0)
+{
+	matrix World;
+	matrix View;
+	matrix Projection;
 
-struct VS_OUTPUT
+	float4 vLightDir[2];
+	float4 vLightColor[2];
+}
+
+struct VS_INPUT 
+{
+	float4 Pos : POSITION;
+	float3 Norm : NORMAL;
+};
+
+struct PS_INPUT
 {
 	float4 Pos : SV_POSITION;
+	float3 Norm : TEXCOORD0;
 };
