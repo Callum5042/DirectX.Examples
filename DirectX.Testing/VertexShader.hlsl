@@ -7,7 +7,7 @@ cbuffer ConstantBuffer : register(b0)
 	matrix View;
 	matrix Projection;
 }
-
+ 
 VS_OUTPUT main(float4 Pos : POSITION, float2 tex : TEXCOORD0)
 {
 	VS_OUTPUT output;

@@ -3,6 +3,9 @@
 #include <SDL_messagebox.h>
 #include <SDL_syswm.h>
 
+#include <DirectXMath.h>
+using namespace DirectX;
+
 struct SimpleVertex
 {
 	SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
@@ -11,6 +14,18 @@ struct SimpleVertex
 	float y;
 	float z;
 };
+
+struct ConstantBuffer
+{
+	XMMATRIX mWorld;
+	XMMATRIX mView;
+	XMMATRIX mProjection;
+};
+
+ID3D11Buffer* g_pConstantBuffer = nullptr;
+DirectX::XMMATRIX g_World;
+DirectX::XMMATRIX g_View;
+DirectX::XMMATRIX g_Projection;
 
 RenderDevice::RenderDevice(MainWindow* mainWindow) : m_Window(mainWindow)
 {
@@ -37,10 +52,10 @@ bool RenderDevice::Initialise()
 	// Create vertex buffer
 	SimpleVertex vertices[] =
 	{
-		SimpleVertex(-0.5f, 0.5f, 0.5f),
-		SimpleVertex(0.5f, 0.5f, 0.5f),
-		SimpleVertex(0.5f, -0.5f, 0.5f),
-		SimpleVertex(-0.5f, -0.5f, 0.5f),
+		SimpleVertex(-0.5f, 0.5f, 0.0f),
+		SimpleVertex(0.5f, 0.5f, 0.0f),
+		SimpleVertex(0.5f, -0.5f, 0.0f),
+		SimpleVertex(-0.5f, -0.5f, 0.0f),
 	};
 
 	WORD indices[] =
@@ -59,7 +74,7 @@ bool RenderDevice::Initialise()
 	D3D11_SUBRESOURCE_DATA vInitData = {};
 	vInitData.pSysMem = vertices;
 
-	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* vertexBuffer = nullptr; 
 	HRESULT hr = m_Device->CreateBuffer(&vbd, &vInitData, &vertexBuffer);
 	if (FAILED(hr))
 		return false;
@@ -89,6 +104,32 @@ bool RenderDevice::Initialise()
 
 	// Set primitive topology
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Constant buffer
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(ConstantBuffer);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	hr = m_Device->CreateBuffer(&bd, nullptr, &g_pConstantBuffer);
+	if (FAILED(hr))
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "CreateBuffer failed", nullptr);
+		return false;
+	}
+
+	// Perspective View
+	g_World = XMMatrixIdentity();
+	
+	XMVECTOR eye = XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f);
+	XMVECTOR at = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	g_View = XMMatrixLookAtLH(eye, at, up);
+
+	// Create the projection matrix for 3D rendering.
+	float fieldOfView = 85 * DirectX::XM_PI / 180;
+	float screenAspect = (float)800 / (float)600;
+	g_Projection = XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, screenAspect, 0.01f, 100.0f);
 
 	return true;
 }
@@ -234,6 +275,28 @@ void RenderDevice::Render()
 	// Clear window to blue
 	static const float Blue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&Blue));
+
+	// hing
+	static float t = 0.0f;
+	static ULONGLONG timeStart = 0;
+	ULONGLONG timeCur = GetTickCount64();
+	if (timeStart == 0)
+		timeStart = timeCur;
+	t = (timeCur - timeStart) / 1000.0f;
+
+	//
+	// Animate the cube
+	//
+	g_World = XMMatrixRotationY(t);
+
+	// Shader thing
+	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+
+	ConstantBuffer cb;
+	cb.mWorld = XMMatrixTranspose(g_World);
+	cb.mView = XMMatrixTranspose(g_View);
+	cb.mProjection = XMMatrixTranspose(g_Projection);
+	m_DeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	// Render triangle
 	m_DeviceContext->DrawIndexed(6, 0, 0);
