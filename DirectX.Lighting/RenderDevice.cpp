@@ -402,8 +402,8 @@ void RenderDevice::Render()
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
 	cb.vLightDir[0] = vLightDirs[0];
-	cb.vLightDir[1] = vLightDirs[1];
 	cb.vLightColor[0] = vLightColors[0];
+	cb.vLightDir[1] = vLightDirs[1];
 	cb.vLightColor[1] = vLightColors[1];
 
 	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
