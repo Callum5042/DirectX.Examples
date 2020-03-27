@@ -25,8 +25,9 @@ struct ConstantBuffer
 	XMMATRIX mWorld;
 	XMMATRIX mView;
 	XMMATRIX mProjection;
-	XMFLOAT4 vLightDir[2];
-	XMFLOAT4 vLightColor[2];
+
+	XMFLOAT4 vLightDir;
+	XMFLOAT4 vLightColor;
 };
 
 ID3D11Buffer* g_pConstantBuffer = nullptr;
@@ -71,7 +72,7 @@ bool RenderDevice::Initialise()
 	descDepth.MiscFlags = 0;
 	HRESULT hr = m_Device->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
 	if (FAILED(hr))
-		return hr;
+		return false;
 
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
@@ -80,24 +81,9 @@ bool RenderDevice::Initialise()
 	descDSV.Texture2D.MipSlice = 0;
 	hr = m_Device->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
 	if (FAILED(hr))
-		return hr;
+		return false;
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, g_pDepthStencilView);
-
-	// Create vertex buffer
-	/*SimpleVertex vertices[] =
-	{
-		SimpleVertex(-0.5f, 0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
-		SimpleVertex(0.5f, 0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
-		SimpleVertex(0.5f, -0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
-		SimpleVertex(-0.5f, -0.5f, 0.0f, XMFLOAT3(0.0f, 1.0f, 0.0f)),
-	};*/
-
-	/*WORD indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};*/
 
 	SimpleVertex vertices[] =
 	{
@@ -386,25 +372,20 @@ void RenderDevice::Render()
 
     XMFLOAT4 vLightColors[2] =
     {
-        XMFLOAT4( 0.5f, 0.5f, 0.5f, 1.0f ),
+        XMFLOAT4( 0.8f, 0.8f, 0.8f, 1.0f ),
         XMFLOAT4( 0.5f, 0.5f, 0.5f, 1.0f )
     };
 
+	XMFLOAT4 lightDirection = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
+	XMFLOAT4 lightColour = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+
 	// Shader thing
-
-	/*XMMATRIX mRotate = XMMatrixRotationY(-2.0f * t);
-	XMVECTOR vLightDir = XMLoadFloat4(&vLightDirs[1]);
-	vLightDir = XMVector3Transform(vLightDir, mRotate);
-	XMStoreFloat4(&vLightDirs[1], vLightDir);*/
-
 	ConstantBuffer cb;
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
-	cb.vLightDir[0] = vLightDirs[0];
-	cb.vLightColor[0] = vLightColors[0];
-	cb.vLightDir[1] = vLightDirs[1];
-	cb.vLightColor[1] = vLightColors[1];
+	cb.vLightDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
+	cb.vLightColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 
 	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	m_DeviceContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
