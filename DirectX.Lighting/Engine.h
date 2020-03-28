@@ -17,11 +17,13 @@ public:
 
 	Events::EventDispatcher* GetEventDispatcher() const;
 	inline virtual Shader* GetShader() { return m_Shader; }
+	inline RenderDevice* GetRenderDevice() { return m_RenderDevice; }
 
 	void Exit();
 
 protected:
 	virtual bool OnInitialise();
+	virtual void OnRender();
 	virtual void OnUpdate();
 
 private:

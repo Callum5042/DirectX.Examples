@@ -1,7 +1,7 @@
 
 #include "Events.h"
 #include <SDL_events.h>
-//#include "InputEvents.h"
+#include "InputEvents.h"
 #include "WindowEvents.h"
 #include "Engine.h"
 
@@ -20,7 +20,7 @@ namespace
 				dispatcher->AddEvent(new Events::WindowQuit());
 				break;
 
-			/*case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONDOWN:
 			{
 				auto mouseEvent = new Events::MousePressedEvent();
 				mouseEvent->data.button = static_cast<MouseButton>((1 << e.button.button));
@@ -31,7 +31,7 @@ namespace
 				break;	
 			}
 
-			case SDL_MOUSEBUTTONUP:
+			/*case SDL_MOUSEBUTTONUP:
 			{
 				auto mouseEvent = new Events::MouseReleasedEvent();
 				mouseEvent->data.button = static_cast<MouseButton>((1 << e.button.button));

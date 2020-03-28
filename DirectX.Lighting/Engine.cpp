@@ -25,7 +25,9 @@ int Engine::Execute(int argc, char** argv)
 		OnUpdate();
 
 		m_Shader->BindShaders();
-		m_RenderDevice->Render();
+		m_RenderDevice->ClearScreen();
+		OnRender();
+		m_RenderDevice->RenderScene();
 	}
 
 	return 0;
@@ -75,4 +77,8 @@ bool Engine::Initialise()
 	m_EventDispatcher = new Events::EventDispatcher();
 
 	return OnInitialise();
+}
+
+void Engine::OnRender()
+{
 }

@@ -2,6 +2,7 @@
 
 #include "MainWindow.h"
 #include <d3d11.h>
+#include "Model.h"
 
 class RenderDevice
 {
@@ -9,8 +10,11 @@ public:
 	RenderDevice(MainWindow* window);
 
 	bool Initialise();
+	bool SetDepthStencil();
 	void SetRasterState();
-	void Render();
+
+	void ClearScreen();
+	void RenderScene();
 
 	inline ID3D11Device* GetDevice() { return m_Device; }
 	inline ID3D11DeviceContext* GetDeviceContext() { return m_DeviceContext; }
@@ -22,6 +26,10 @@ private:
 	ID3D11DeviceContext* m_DeviceContext = nullptr;
 	IDXGISwapChain* m_SwapChain = nullptr;
 	ID3D11RenderTargetView* m_RenderTargetView = nullptr;
+	ID3D11Texture2D* m_DepthStencil = nullptr;
+	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
+
+	Model* m_Model = nullptr;
 
 	bool CreateDevice();
 	bool CreateSwapChain();

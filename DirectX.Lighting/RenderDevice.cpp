@@ -6,38 +6,8 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
-ID3D11Texture2D* g_pDepthStencil = nullptr;
-ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
-
-struct SimpleVertex
-{
-	SimpleVertex(float x, float y, float z, XMFLOAT3 Normal) : x(x), y(y), z(z), Normal(Normal) {}
-
-	float x;
-	float y;
-	float z;
-
-	XMFLOAT3 Normal;
-};
-
-struct ConstantBuffer
-{
-	XMMATRIX mWorld;
-	XMMATRIX mView;
-	XMMATRIX mProjection;
-
-	XMFLOAT4 vLightDir;
-	XMFLOAT4 vLightColor;
-};
-
-ID3D11Buffer* g_pConstantBuffer = nullptr;
-DirectX::XMMATRIX g_World;
-DirectX::XMMATRIX g_View;
-DirectX::XMMATRIX g_Projection;
-
 RenderDevice::RenderDevice(MainWindow* mainWindow) : m_Window(mainWindow)
 {
-
 }
 
 bool RenderDevice::Initialise()
@@ -51,13 +21,21 @@ bool RenderDevice::Initialise()
 	if (!CreateRenderTargetView())
 		return false;
 
-	// Setup the viewport
 	SetViewport();
-
-	// Raster
 	SetRasterState();
 
-	// Create depth stencil texture
+	if (!SetDepthStencil())
+		return false;
+
+	m_Model = new Model();
+	if (!m_Model->Init())
+		return false;
+
+	return true;
+}
+
+bool RenderDevice::SetDepthStencil()
+{
 	D3D11_TEXTURE2D_DESC descDepth = {};
 	descDepth.Width = 800;
 	descDepth.Height = 600;
@@ -70,142 +48,26 @@ bool RenderDevice::Initialise()
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
-	HRESULT hr = m_Device->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
+	HRESULT hr = m_Device->CreateTexture2D(&descDepth, nullptr, &m_DepthStencil);
 	if (FAILED(hr))
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "CreateTexture2D failed", nullptr);
 		return false;
+	}
 
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
-	hr = m_Device->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
-	if (FAILED(hr))
-		return false;
-
-	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, g_pDepthStencilView);
-
-	SimpleVertex vertices[] =
-	{
-		{ -1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ 1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ 1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ -1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 1.0f, 0.0f) },
-
-		{ -1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ 1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ 1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ -1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, -1.0f, 0.0f) },
-
-		{ -1.0f, -1.0f, 1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ -1.0f, -1.0f, -1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ -1.0f, 1.0f, -1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ -1.0f, 1.0f, 1.0f, XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-
-		{ 1.0f, -1.0f, 1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ 1.0f, -1.0f, -1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ 1.0f, 1.0f, -1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ 1.0f, 1.0f, 1.0f, XMFLOAT3(1.0f, 0.0f, 0.0f) },
-
-		{ -1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ 1.0f, -1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ 1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ -1.0f, 1.0f, -1.0f, XMFLOAT3(0.0f, 0.0f, -1.0f) },
-
-		{ -1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ 1.0f, -1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ 1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ -1.0f, 1.0f, 1.0f, XMFLOAT3(0.0f, 0.0f, 1.0f) },
-	};
-
-	WORD indices[] =
-	{
-		3,1,0,
-		2,1,3,
-
-		6,4,5,
-		7,4,6,
-
-		11,9,8,
-		10,9,11,
-
-		14,12,13,
-		15,12,14,
-
-		19,17,16,
-		18,17,19,
-
-		22,20,21,
-		23,20,22
-	};
-
-	// Vertex duffer description
-	D3D11_BUFFER_DESC vbd = {};
-	vbd.Usage = D3D11_USAGE_DEFAULT;
-	vbd.ByteWidth = sizeof(vertices);
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA vInitData = {};
-	vInitData.pSysMem = vertices;
-
-	ID3D11Buffer* vertexBuffer = nullptr; 
-	hr = m_Device->CreateBuffer(&vbd, &vInitData, &vertexBuffer);
-	if (FAILED(hr))
-		return false;
-
-	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
-	m_DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	// Index buffer description
-	D3D11_BUFFER_DESC ibd = {};
-	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.ByteWidth = sizeof(indices);
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA iInitData = {};
-	iInitData.pSysMem = indices;
-
-	ID3D11Buffer* indexBuffer = nullptr;
-	hr = m_Device->CreateBuffer(&ibd, &iInitData, &indexBuffer);
-	if (FAILED(hr))
-		return false;
-
-	// Set vertex buffer
-	m_DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
-	// Set primitive topology
-	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// Constant buffer
-	D3D11_BUFFER_DESC bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(ConstantBuffer);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	hr = m_Device->CreateBuffer(&bd, nullptr, &g_pConstantBuffer);
+	hr = m_Device->CreateDepthStencilView(m_DepthStencil, &descDSV, &m_DepthStencilView);
 	if (FAILED(hr))
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "CreateBuffer failed", nullptr);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "CreateDepthStencilView failed", nullptr);
 		return false;
 	}
-
-	// Perspective View
-	g_World = XMMatrixIdentity();
 	
-	XMVECTOR eye = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
-	XMVECTOR at = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	g_View = XMMatrixLookAtLH(eye, at, up);
-
-	// Create the projection matrix for 3D rendering.
-	float fieldOfView = 85 * DirectX::XM_PI / 180;
-	float screenAspect = (float)800 / (float)600;
-	g_Projection = XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, screenAspect, 0.01f, 100.0f);
-
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	return true;
 }
 
@@ -345,55 +207,14 @@ bool RenderDevice::CreateRenderTargetView()
 	return true;
 }
 
-void RenderDevice::Render()
+void RenderDevice::ClearScreen()
 {
-	// Clear window to blue
 	static const float Blue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&Blue));
-	m_DeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
 
-	// hing
-	static float t = 0.0f;
-	static ULONGLONG timeStart = 0;
-	ULONGLONG timeCur = GetTickCount64();
-	if (timeStart == 0)
-		timeStart = timeCur;
-	t = (timeCur - timeStart) / 1000.0f;
-
-	// Animate the cube
-	g_World = XMMatrixRotationY(t);
-
-	// Setup our lighting parameters
-    XMFLOAT4 vLightDirs[2] =
-    {
-        XMFLOAT4( -0.577f, 0.577f, -0.577f, 1.0f ),
-        XMFLOAT4( 0.0f, 0.0f, -1.0f, 1.0f ),
-    };
-
-    XMFLOAT4 vLightColors[2] =
-    {
-        XMFLOAT4( 0.8f, 0.8f, 0.8f, 1.0f ),
-        XMFLOAT4( 0.5f, 0.5f, 0.5f, 1.0f )
-    };
-
-	XMFLOAT4 lightDirection = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
-	XMFLOAT4 lightColour = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-
-	// Shader thing
-	ConstantBuffer cb;
-	cb.mWorld = XMMatrixTranspose(g_World);
-	cb.mView = XMMatrixTranspose(g_View);
-	cb.mProjection = XMMatrixTranspose(g_Projection);
-	cb.vLightDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
-	cb.vLightColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-
-	m_DeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-	m_DeviceContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-	m_DeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-
-	// Render triangle
-	m_DeviceContext->DrawIndexed(36, 0, 0);
-
-	// Update window
+void RenderDevice::RenderScene()
+{
 	m_SwapChain->Present(0, 0);
 }

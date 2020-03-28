@@ -1,9 +1,12 @@
 
 #include "Engine.h"
 #include "WindowEvents.h"
+#include "InputEvents.h"
 #include <iostream>
 
-class Application : public Engine, public Events::WindowListener
+#include "Model.h"
+
+class Application : public Engine, public Events::WindowListener, public Events::InputListener
 {
 public:
 	Application() = default;
@@ -13,18 +16,35 @@ public:
 		GetShader()->CreateVertexShader("VertexShader.cso");
 		GetShader()->CreatePixelShader("PixelShader.cso");
 
+		m_Model = new Model();
+		if (!m_Model->Init())
+			return false;
+
 		return true;
 	}
 
 	void OnUpdate() override
 	{
+		m_Model->Update();
+	}
 
+	void OnRender() override
+	{
+		m_Model->Render();
 	}
 
 	void OnQuit() override
 	{
 		Exit();
 	}
+
+	void OnMouseDown(MouseData&& data) override
+	{
+		std::cout << "Mouse down\n";
+	}
+
+private:
+	Model* m_Model = nullptr;
 };
 
 int main(int argc, char** argv)
