@@ -27,10 +27,6 @@ bool RenderDevice::Initialise()
 	if (!SetDepthStencil())
 		return false;
 
-	m_Model = new Model();
-	if (!m_Model->Init())
-		return false;
-
 	return true;
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 
-class Model
+#include "InputEvents.h"
+
+class Model : Events::InputListener
 {
 public:
 
@@ -11,6 +13,8 @@ public:
 	float X;
 	float Y;
 	float Z;
+
+	void OnMouseDown(MouseData&& data) override;
 
 private:
 

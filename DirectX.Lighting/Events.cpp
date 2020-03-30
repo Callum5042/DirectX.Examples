@@ -23,7 +23,7 @@ namespace
 			case SDL_MOUSEBUTTONDOWN:
 			{
 				auto mouseEvent = new Events::MousePressedEvent();
-				mouseEvent->data.button = static_cast<MouseButton>((1 << e.button.button));
+				mouseEvent->data.button = static_cast<MouseButton>((1 << (e.button.button - 1)));
 				mouseEvent->data.x = e.button.x;
 				mouseEvent->data.y = e.button.y;
 
@@ -31,10 +31,10 @@ namespace
 				break;	
 			}
 
-			/*case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEBUTTONUP:
 			{
 				auto mouseEvent = new Events::MouseReleasedEvent();
-				mouseEvent->data.button = static_cast<MouseButton>((1 << e.button.button));
+				mouseEvent->data.button = static_cast<MouseButton>((1 << (e.button.button - 1)));
 				mouseEvent->data.x = e.button.x;
 				mouseEvent->data.y = e.button.y;
 
@@ -42,7 +42,7 @@ namespace
 				break;
 			}
 
-			case SDL_MOUSEWHEEL:
+			/*case SDL_MOUSEWHEEL:
 			{
 				auto mouseEvent = new Rove::Events::MouseWheelEvent();
 

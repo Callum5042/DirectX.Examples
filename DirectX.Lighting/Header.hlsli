@@ -7,6 +7,7 @@ cbuffer ConstantBuffer : register(b0)
 
 	float4 vLightDir;
 	float4 vLightColor;
+	float4 vLightAmbient;
 }
 
 struct VS_INPUT 

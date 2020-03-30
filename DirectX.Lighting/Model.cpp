@@ -1,8 +1,9 @@
 #include "Model.h"
 #include "Engine.h"
+#include "RenderDevice.h"
+#include <SDL_messagebox.h>
 #include <DirectXMath.h>
 using namespace DirectX;
-#include <SDL_messagebox.h>
 
 struct ConstantBuffer
 {
@@ -12,6 +13,7 @@ struct ConstantBuffer
 
 	XMFLOAT4 vLightDir;
 	XMFLOAT4 vLightColor;
+	XMFLOAT4 vLightAmbient;
 };
 
 ID3D11Buffer* g_pConstantBuffer1 = nullptr;
@@ -172,6 +174,9 @@ void Model::Update()
 
 	//// Animate the cube
 	g_World = XMMatrixRotationY(t);
+
+
+	g_World *= XMMatrixTranslation(X, Y, Z);
 }
 
 void Model::Render()
@@ -179,21 +184,38 @@ void Model::Render()
 	auto deviceContext = Engine::GetInstance()->GetRenderDevice()->GetDeviceContext();
 
 	// Setup our lighting parameters
-	XMFLOAT4 lightDirection = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
-	XMFLOAT4 lightColour = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	//XMFLOAT4 lightDirection = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
+	//XMFLOAT4 lightColour = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	XMFLOAT4 lightDirection = XMFLOAT4(-0.0f, 0.0f, -0.5f, 1.0f); 
+	XMFLOAT4 lightColour = XMFLOAT4(0.0f, 0.8f, 0.0f, 1.0f);
+	XMFLOAT4 lightAmbient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 
 	// Shader thing
 	ConstantBuffer cb;
 	cb.mWorld = XMMatrixTranspose(g_World);
 	cb.mView = XMMatrixTranspose(g_View);
 	cb.mProjection = XMMatrixTranspose(g_Projection);
-	cb.vLightDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
-	cb.vLightColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	cb.vLightDir = lightDirection;
+	cb.vLightColor = lightColour;
+	cb.vLightAmbient = lightAmbient;
 
 	deviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer1);
 	deviceContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer1);
+
 	deviceContext->UpdateSubresource(g_pConstantBuffer1, 0, nullptr, &cb, 0, 0);
 
 	// Render triangle
 	deviceContext->DrawIndexed(36, 0, 0);
+}
+
+void Model::OnMouseDown(MouseData&& data)
+{
+	if (data.button == MouseButton::MOUSE_LMASK)
+	{
+		Z -= 1;
+	}
+	else if (data.button == MouseButton::MOUSE_RMASK)
+	{
+		Z += 1;
+	}
 }

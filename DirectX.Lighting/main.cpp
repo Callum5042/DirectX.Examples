@@ -6,7 +6,7 @@
 
 #include "Model.h"
 
-class Application : public Engine, public Events::WindowListener, public Events::InputListener
+class Application : public Engine, public Events::WindowListener
 {
 public:
 	Application() = default;
@@ -36,11 +36,6 @@ public:
 	void OnQuit() override
 	{
 		Exit();
-	}
-
-	void OnMouseDown(MouseData&& data) override
-	{
-		std::cout << "Mouse down\n";
 	}
 
 private:

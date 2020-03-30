@@ -2,7 +2,6 @@
 
 #include "MainWindow.h"
 #include <d3d11.h>
-#include "Model.h"
 
 class RenderDevice
 {
@@ -28,8 +27,6 @@ private:
 	ID3D11RenderTargetView* m_RenderTargetView = nullptr;
 	ID3D11Texture2D* m_DepthStencil = nullptr;
 	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
-
-	Model* m_Model = nullptr;
 
 	bool CreateDevice();
 	bool CreateSwapChain();
