@@ -186,7 +186,7 @@ void Model::Render()
 	// Setup our lighting parameters
 	//XMFLOAT4 lightDirection = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
 	//XMFLOAT4 lightColour = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	XMFLOAT4 lightDirection = XMFLOAT4(-0.0f, 0.0f, -0.5f, 1.0f); 
+	XMFLOAT4 lightDirection = XMFLOAT4(-0.5f, 0.0f, -0.0f, 1.0f); 
 	XMFLOAT4 lightColour = XMFLOAT4(0.0f, 0.8f, 0.0f, 1.0f);
 	XMFLOAT4 lightAmbient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 
@@ -212,10 +212,10 @@ void Model::OnMouseDown(MouseData&& data)
 {
 	if (data.button == MouseButton::MOUSE_LMASK)
 	{
-		Z -= 1;
+		X -= 0.5f;
 	}
 	else if (data.button == MouseButton::MOUSE_RMASK)
 	{
-		Z += 1;
+		X += 0.5f;
 	}
 }
