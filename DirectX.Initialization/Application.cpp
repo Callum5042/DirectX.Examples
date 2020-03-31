@@ -25,7 +25,7 @@ void Application::OnRender()
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	// Refresh screen
-	DX::ThrowIfFailed(m_SwapChain->Present(0, 0));
+	m_SwapChain->Present(0, 0);
 }
 
 void Application::OnQuit()
@@ -155,7 +155,7 @@ void Application::SetViewport()
 {
 	D3D11_VIEWPORT vp;
 	vp.Width = static_cast<FLOAT>(GetWindow()->GetWidth());
-	vp.Height = static_cast<FLOAT>(GetWindow()->GetHeight());
+	vp.Height = static_cast<FLOAT>(GetWindow()->GetWidth());
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
@@ -188,7 +188,7 @@ HWND Application::GetHwnd() const
 	SDL_SysWMinfo wmInfo;
 	SDL_VERSION(&wmInfo.version);
 
-	SDL_Window* window = reinterpret_cast<SDL_Window*>(GetWindow());
+	SDL_Window* window = reinterpret_cast<SDL_Window*>(GetWindow()->GetWindow());
 	SDL_GetWindowWMInfo(window, &wmInfo);
 	return wmInfo.info.win.window;
 }
