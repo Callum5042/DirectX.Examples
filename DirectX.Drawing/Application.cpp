@@ -221,7 +221,12 @@ void Application::OnQuit()
 
 void Application::OnResize(int width, int height)
 {
+	m_RenderTargetView->Release();
+	m_DepthStencilView->Release();
 
+	DX::ThrowIfFailed(m_SwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));	
+	CreateRenderTargetView();
+	SetViewport();
 }
 
 bool Application::CreateDevice()
@@ -309,6 +314,7 @@ bool Application::CreateRenderTargetView()
 	}
 
 	DX::ThrowIfFailed(m_Device->CreateRenderTargetView(backBuffer, nullptr, &m_RenderTargetView));
+	backBuffer->Release();
 
 	// Depth stencil view
 	D3D11_TEXTURE2D_DESC descDepth;
