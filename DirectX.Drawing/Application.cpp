@@ -219,6 +219,11 @@ void Application::OnQuit()
 	Exit();
 }
 
+void Application::OnResize(int width, int height)
+{
+
+}
+
 bool Application::CreateDevice()
 {
 	D3D_FEATURE_LEVEL featureLevels[] =

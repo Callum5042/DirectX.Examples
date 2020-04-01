@@ -16,6 +16,7 @@ public:
 
 	// Window Events
 	void OnQuit() override;
+	void OnResize(int width, int height) override;
 
 private:
 

@@ -4,6 +4,7 @@
 #include "InputEvents.h"
 #include "WindowEvents.h"
 #include "Engine.h"
+#include <iostream>
 
 namespace
 {
@@ -18,6 +19,13 @@ namespace
 			{
 			case SDL_QUIT:
 				dispatcher->AddEvent(new Events::WindowQuit());
+				break;
+
+			case SDL_WINDOWEVENT:
+				if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					dispatcher->AddEvent(new Events::WindowResize(e.window.data1, e.window.data2));
+				}
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:

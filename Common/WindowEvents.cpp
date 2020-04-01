@@ -21,3 +21,16 @@ void Events::WindowQuit::Handle()
 		listener->OnQuit();
 	}
 }
+
+Events::WindowResize::WindowResize(int width, int height) : m_Width(width), m_Height(height)
+{
+	m_EventType = EventType::WINDOW_RESIZE;
+}
+
+void Events::WindowResize::Handle()
+{
+	for (auto& listener : WindowListener::m_WindowListeners)
+	{
+		listener->OnResize(m_Width, m_Height);
+	}
+}
