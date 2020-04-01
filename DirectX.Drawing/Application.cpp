@@ -101,7 +101,7 @@ bool Application::OnInitialise()
 		22,20,21,
 		23,20,22
 	};
-
+	
 	// Vertex duffer description
 	D3D11_BUFFER_DESC vbd = {};
 	vbd.Usage = D3D11_USAGE_DEFAULT;
@@ -175,7 +175,6 @@ bool Application::OnInitialise()
 
 void Application::OnUpdate()
 {
-	// Spin
 	static float t = 0.0f;
 	static ULONGLONG timeStart = 0;
 	ULONGLONG timeCur = GetTickCount64();
@@ -341,7 +340,7 @@ void Application::SetViewport()
 {
 	D3D11_VIEWPORT vp;
 	vp.Width = static_cast<FLOAT>(GetWindow()->GetWidth());
-	vp.Height = static_cast<FLOAT>(GetWindow()->GetWidth());
+	vp.Height = static_cast<FLOAT>(GetWindow()->GetHeight());
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
@@ -372,7 +371,6 @@ bool Application::CreateVertexShader(std::string&& vertexShaderPath)
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
