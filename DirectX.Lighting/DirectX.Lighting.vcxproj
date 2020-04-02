@@ -95,6 +95,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Sources\Testing\DirectX.Testing\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,43 +153,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="Events.cpp" />
-    <ClCompile Include="InputEvents.cpp" />
+    <ClCompile Include="..\Common\Engine.cpp" />
+    <ClCompile Include="..\Common\Events.cpp" />
+    <ClCompile Include="..\Common\InputEvents.cpp" />
+    <ClCompile Include="..\Common\MainWindow.cpp" />
+    <ClCompile Include="..\Common\RenderDevice.cpp" />
+    <ClCompile Include="..\Common\Shader.cpp" />
+    <ClCompile Include="..\Common\WindowEvents.cpp" />
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="RenderDevice.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="WindowEvents.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine.h" />
-    <ClInclude Include="Events.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="InputEvents.h" />
-    <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="RenderDevice.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="WindowEvents.h" />
+    <ClInclude Include="..\Common\Engine.h" />
+    <ClInclude Include="..\Common\Events.h" />
+    <ClInclude Include="..\Common\Input.h" />
+    <ClInclude Include="..\Common\InputEvents.h" />
+    <ClInclude Include="..\Common\MainWindow.h" />
+    <ClInclude Include="..\Common\RenderDevice.h" />
+    <ClInclude Include="..\Common\Shader.h" />
+    <ClInclude Include="..\Common\WindowEvents.h" />
+    <ClInclude Include="Application.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Header.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Header.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

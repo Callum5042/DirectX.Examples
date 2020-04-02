@@ -16,64 +16,72 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{bea59506-dcba-4b79-b1ce-8781a16d1b86}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{1dfd799e-c029-480d-8698-b81259c5f909}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainWindow.cpp">
+    <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\Engine.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Events.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\Events.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="WindowEvents.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\InputEvents.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="RenderDevice.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\MainWindow.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\RenderDevice.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\Shader.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="InputEvents.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Common\WindowEvents.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MainWindow.h">
+    <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\Engine.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Events.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\Events.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="WindowEvents.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\Input.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="RenderDevice.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\InputEvents.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\MainWindow.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\RenderDevice.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="InputEvents.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\Shader.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\WindowEvents.h">
+      <Filter>Common</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Header.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
@@ -82,10 +90,5 @@
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Header.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

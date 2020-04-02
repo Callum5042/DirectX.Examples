@@ -3,6 +3,8 @@
 #include <SDL_syswm.h>
 #include <fstream>
 #include <SDL_messagebox.h>
+#include <DirectXMath.h>
+using namespace DirectX;
 
 struct SimpleVertex
 {
