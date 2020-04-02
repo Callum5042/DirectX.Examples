@@ -8,11 +8,16 @@ using namespace DirectX;
 
 struct SimpleVertex
 {
-	SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
+	SimpleVertex(float x, float y, float z, float nx, float ny, float nz) : x(x), y(y), z(z)
+	{
+		normal = XMFLOAT3(nx, ny, nz);
+	}
 
 	float x;
 	float y;
 	float z;
+
+	XMFLOAT3 normal;
 };
 
 struct ConstantBuffer
@@ -36,44 +41,50 @@ bool Application::OnInitialise()
 	SetViewport();
 
 	// Create shaders
-	if (!CreateVertexShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Drawing\\Debug-x64\\VertexShader.cso"))
+	if (!CreateVertexShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Lighting\\Debug-x64\\VertexShader.cso"))
 		return false;
 
-	if (!CreatePixelShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Drawing\\Debug-x64\\PixelShader.cso"))
+	if (!CreatePixelShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Lighting\\Debug-x64\\PixelShader.cso"))
 		return false;
 
 	// Drawing
 	SimpleVertex vertices[] =
 	{
-		{ -1.0f, 1.0f, -1.0f },
-		{ 1.0f, 1.0f, -1.0f },
-		{ 1.0f, 1.0f, 1.0f },
-		{ -1.0f, 1.0f, 1.0f },
+		// Top
+		{ -1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
+		{ +1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
+		{ +1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 0.0f },
+		{ -1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 0.0f },
 
-		{ -1.0f, -1.0f, -1.0f },
-		{ 1.0f, -1.0f, -1.0f },
-		{ 1.0f, -1.0f, 1.0f },
-		{ -1.0f, -1.0f, 1.0f },
+		// Bottom
+		{ -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f },
+		{ +1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f },
+		{ +1.0f, -1.0f, +1.0f, 0.0f, -1.0f, 0.0f },
+		{ -1.0f, -1.0f, +1.0f, 0.0f, -1.0f, 0.0f },
 
-		{ -1.0f, -1.0f, 1.0f },
-		{ -1.0f, -1.0f, -1.0f },
-		{ -1.0f, 1.0f, -1.0f },
-		{ -1.0f, 1.0f, 1.0f },
+		// Left
+		{ -1.0f, -1.0f, +1.0f, -1.0f, 0.0f, 0.0f },
+		{ -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f },
+		{ -1.0f, +1.0f, -1.0f, -1.0f, 0.0f, 0.0f },
+		{ -1.0f, +1.0f, +1.0f, -1.0f, 0.0f, 0.0f },
 
-		{ 1.0f, -1.0f, 1.0f },
-		{ 1.0f, -1.0f, -1.0f },
-		{ 1.0f, 1.0f, -1.0f },
-		{ 1.0f, 1.0f, 1.0f },
+		// Right
+		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 0.0f },
+		{ +1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f },
+		{ +1.0f, +1.0f, -1.0f, 1.0f, 0.0f, 0.0f },
+		{ +1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 0.0f },
 
-		{ -1.0f, -1.0f, -1.0f },
-		{ 1.0f, -1.0f, -1.0f },
-		{ 1.0f, 1.0f, -1.0f },
-		{ -1.0f, 1.0f, -1.0f },
+		// Front
+		{ -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
+		{ +1.0f, -1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
+		{ +1.0f, +1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
+		{ -1.0f, +1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
 
-		{ -1.0f, -1.0f, 1.0f },
-		{ 1.0f, -1.0f, 1.0f },
-		{ 1.0f, 1.0f, 1.0f },
-		{ -1.0f, 1.0f, 1.0f },
+		// Back
+		{ -1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
+		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
+		{ +1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
+		{ -1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
 	};
 
 	WORD indices[] =
@@ -178,6 +189,7 @@ void Application::OnUpdate()
 	t = (timeCur - timeStart) / 1000.0f;
 
 	m_World = XMMatrixRotationY(t);
+	// m_World *= XMMatrixTranslation(-0.0f, -0.0f, 1.0f);
 }
 
 void Application::OnRender()
@@ -377,6 +389,7 @@ bool Application::CreateVertexShader(std::string&& vertexShaderPath)
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
