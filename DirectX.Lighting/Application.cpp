@@ -189,7 +189,9 @@ void Application::OnUpdate()
 	t = (timeCur - timeStart) / 1000.0f;
 
 	m_World = XMMatrixRotationY(t);
-	// m_World *= XMMatrixTranslation(-0.0f, -0.0f, 1.0f);
+	m_World *= XMMatrixRotationZ(t * 0.5);
+	m_World *= XMMatrixRotationX(t * -0.25);
+	m_World *= XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 }
 
 void Application::OnRender()

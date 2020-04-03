@@ -6,14 +6,23 @@ cbuffer ConstantBuffer : register(b0)
 	matrix Projection;
 }
 
+struct Material
+{
+	float4 Ambient;
+	float4 Diffuse;
+	float4 Specular; // w = SpecPower
+	float4 Reflect;
+};
+
 struct VS_INPUT
 {
-	float4 Pos : POSITION;
-	float3 Normal : NORMAL;
+	float3 PosL : POSITION;
+	float3 NormalL : NORMAL;
 };
 
 struct PS_INPUT
 {
-	float4 Pos : SV_POSITION;
-	float3 Normal : NORMAL;
+	float3 PosW : POSITION;
+	float4 PosH : SV_POSITION;
+	float3 NormalW : NORMAL;
 };

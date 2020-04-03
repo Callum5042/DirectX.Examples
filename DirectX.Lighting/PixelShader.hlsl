@@ -1,13 +1,16 @@
 
 #include "Header.hlsli"
 
-float4 main(PS_INPUT input) : SV_TARGET
+float4 main(PS_INPUT pin) : SV_TARGET
 {
-	// float3 lightDir = float3(-0.577f, 0.577f, -0.577f);
-	float3 lightDir = float3(-0.0f, 0.0f, -0.5f);
+	// Interpolating normal can unnormalize it, so normalize it.
+	//pin.NormalW = normalize(pin.NormalW);
 
-	float4 finalColor = saturate(dot(lightDir, input.Normal));
 
-	finalColor.a = 1.0f;
-	return finalColor;
+	float3 lightDir = float3(0.0f, 0.0f, -0.5f);
+
+	float4 litColor = saturate(dot(lightDir, pin.NormalW));
+	
+	litColor.a = 1.0f;
+	return litColor;
 }
