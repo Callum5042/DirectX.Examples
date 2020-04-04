@@ -2,6 +2,7 @@
 
 #include "Events.h"
 #include "Input.h"
+#include <SDL_scancode.h>
 
 namespace Events
 {
@@ -41,16 +42,32 @@ namespace Events
 		MouseWheel wheel;
 	};
 
+	struct KeyData
+	{
+		SDL_Scancode key;
+	};
+
+	class KeyDownEvent : public IEvent
+	{
+	public:
+		KeyDownEvent();
+		void Handle() override;
+
+		KeyData key;
+	};
+
 	class InputListener
 	{
 	public:
 		InputListener();
 		virtual ~InputListener() = default;
 
-		virtual void OnMouseDown(MouseData&& data) { };
-		virtual void OnMouseReleased(MouseData&& data) { };
-		virtual void OnMouseMotion(MouseData&& data) { };
-		virtual void OnMouseWheel(MouseWheelEvent* e) { };
+		virtual void OnMouseDown(MouseData&& data) { }
+		virtual void OnMouseReleased(MouseData&& data) { }
+		virtual void OnMouseMotion(MouseData&& data) { }
+		virtual void OnMouseWheel(MouseWheelEvent* e) { }
+
+		virtual void OnKeyDown(KeyData&& data) { }
 
 	private:
 		static std::vector<InputListener*> m_InputListeners;
@@ -58,5 +75,7 @@ namespace Events
 		friend class MouseReleasedEvent;
 		friend class MouseMotionEvent;
 		friend class MouseWheelEvent;
+
+		friend class KeyDownEvent;
 	};
 }

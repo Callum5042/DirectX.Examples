@@ -22,11 +22,13 @@ namespace
 				break;
 
 			case SDL_WINDOWEVENT:
+			{
 				if (e.window.event == SDL_WINDOWEVENT_RESIZED)
 				{
 					dispatcher->AddEvent(new Events::WindowResize(e.window.data1, e.window.data2));
 				}
 				break;
+			}
 
 			case SDL_MOUSEBUTTONDOWN:
 			{
@@ -47,6 +49,18 @@ namespace
 				mouseEvent->data.y = e.button.y;
 
 				dispatcher->AddEvent(mouseEvent);
+				break;
+			}
+
+			case SDL_KEYDOWN:
+			{
+				if (!e.key.repeat)
+				{
+					auto keyEvent = new Events::KeyDownEvent();
+					keyEvent->key.key = e.key.keysym.scancode;
+
+					dispatcher->AddEvent(keyEvent);
+				}
 				break;
 			}
 

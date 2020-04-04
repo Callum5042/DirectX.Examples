@@ -191,7 +191,7 @@ void Application::OnUpdate()
 	m_World = XMMatrixRotationY(t);
 	m_World *= XMMatrixRotationZ(t * 0.5);
 	m_World *= XMMatrixRotationX(t * -0.25);
-	m_World *= XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	m_World *= XMMatrixTranslation(m_PosX, 0.0f, m_PosZ);
 }
 
 void Application::OnRender()
@@ -236,6 +236,28 @@ void Application::OnResize(int width, int height)
 	DX::ThrowIfFailed(m_SwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));	
 	CreateRenderTargetView();
 	SetViewport();
+}
+
+void Application::OnKeyDown(Events::KeyData&& data)
+{
+	switch (data.key)
+	{
+	case SDL_SCANCODE_LEFT:
+		m_PosX -= 1.0f;
+		break;
+
+	case SDL_SCANCODE_RIGHT:
+		m_PosX += 1.0f;
+		break;
+
+	case SDL_SCANCODE_UP:
+		m_PosZ += 1.0f;
+		break;
+
+	case SDL_SCANCODE_DOWN:
+		m_PosZ -= 1.0f;
+		break;
+	}
 }
 
 bool Application::CreateDevice()

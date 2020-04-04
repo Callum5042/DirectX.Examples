@@ -2,12 +2,13 @@
 
 #include "Engine.h"
 #include "WindowEvents.h"
+#include "InputEvents.h"
 
 #include <d3d11_4.h>
 #include <DirectXMath.h>
 using namespace DirectX;
 
-class Application : public Engine, public Events::WindowListener
+class Application : public Engine, public Events::WindowListener, public Events::InputListener
 {
 public:
 	Application() = default;
@@ -19,6 +20,9 @@ public:
 	// Window Events
 	void OnQuit() override;
 	void OnResize(int width, int height) override;
+
+	// Key Events
+	void OnKeyDown(Events::KeyData&& data) override;
 
 private:
 
@@ -47,6 +51,9 @@ private:
 
 	IDXGIFactory1* GetDXGIFactory();
 	HWND GetHwnd() const;
+
+	float m_PosX = 0.0f;
+	float m_PosZ = 0.0f;
 };
 
 namespace DX

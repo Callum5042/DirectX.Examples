@@ -60,3 +60,16 @@ void Events::MouseWheelEvent::Handle()
 		listener->OnMouseWheel(this);
 	}
 }
+
+Events::KeyDownEvent::KeyDownEvent()
+{
+	EventType::KEY_DOWN;
+}
+
+void Events::KeyDownEvent::Handle()
+{
+	for (auto& listener : InputListener::m_InputListeners)
+	{
+		listener->OnKeyDown(std::move(key));
+	}
+}
