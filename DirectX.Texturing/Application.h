@@ -43,6 +43,8 @@ private:
 	XMMATRIX m_View;
 	XMMATRIX m_Projection;
 
+	ID3D11ShaderResourceView* m_DiffuseMapSRV;
+
 	bool CreateDevice();
 	bool CreateSwapChain();
 	bool CreateRenderTargetView();

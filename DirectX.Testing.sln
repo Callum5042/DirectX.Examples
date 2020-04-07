@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX.Initialization", "D
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX.Drawing", "DirectX.Drawing\DirectX.Drawing.vcxproj", "{7E0F3C33-912E-420A-8BA7-E52C269B943D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX.Texturing", "DirectX.Texturing\DirectX.Texturing.vcxproj", "{E9C472D6-3BEA-4E50-B675-9200257B8940}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{7E0F3C33-912E-420A-8BA7-E52C269B943D}.Release|x64.Build.0 = Release|x64
 		{7E0F3C33-912E-420A-8BA7-E52C269B943D}.Release|x86.ActiveCfg = Release|Win32
 		{7E0F3C33-912E-420A-8BA7-E52C269B943D}.Release|x86.Build.0 = Release|Win32
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Debug|x64.ActiveCfg = Debug|x64
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Debug|x64.Build.0 = Debug|x64
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Debug|x86.ActiveCfg = Debug|Win32
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Debug|x86.Build.0 = Debug|Win32
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Release|x64.ActiveCfg = Release|x64
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Release|x64.Build.0 = Release|x64
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Release|x86.ActiveCfg = Release|Win32
+		{E9C472D6-3BEA-4E50-B675-9200257B8940}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

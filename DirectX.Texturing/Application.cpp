@@ -4,13 +4,15 @@
 #include <fstream>
 #include <SDL_messagebox.h>
 #include <DirectXMath.h>
+#include <DDSTextureLoader.h>
 using namespace DirectX;
 
 struct SimpleVertex
 {
-	SimpleVertex(float x, float y, float z, float nx, float ny, float nz) : x(x), y(y), z(z)
+	SimpleVertex(float x, float y, float z, float nx, float ny, float nz, float u, float v) : x(x), y(y), z(z)
 	{
 		normal = XMFLOAT3(nx, ny, nz);
+		tex = XMFLOAT2(u, v);
 	}
 
 	float x;
@@ -18,6 +20,7 @@ struct SimpleVertex
 	float z;
 
 	XMFLOAT3 normal;
+	XMFLOAT2 tex;
 };
 
 struct ConstantBuffer
@@ -41,50 +44,50 @@ bool Application::OnInitialise()
 	SetViewport();
 
 	// Create shaders
-	if (!CreateVertexShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Lighting\\Debug-x64\\VertexShader.cso"))
+	if (!CreateVertexShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\VertexShader.cso"))
 		return false;
 
-	if (!CreatePixelShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Lighting\\Debug-x64\\PixelShader.cso"))
+	if (!CreatePixelShader("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\PixelShader.cso"))
 		return false;
 
 	// Drawing
 	SimpleVertex vertices[] =
 	{
 		// Top
-		{ -1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
-		{ +1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
-		{ +1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 0.0f },
-		{ -1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 0.0f },
+		{ -1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+		{ +1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+		{ +1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f },
+		{ -1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f },
 
 		// Bottom
-		{ -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f },
-		{ +1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f },
-		{ +1.0f, -1.0f, +1.0f, 0.0f, -1.0f, 0.0f },
-		{ -1.0f, -1.0f, +1.0f, 0.0f, -1.0f, 0.0f },
+		{ -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f },
+		{ +1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f },
+		{ +1.0f, -1.0f, +1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f },
+		{ -1.0f, -1.0f, +1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f },
 
 		// Left
-		{ -1.0f, -1.0f, +1.0f, -1.0f, 0.0f, 0.0f },
-		{ -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f },
-		{ -1.0f, +1.0f, -1.0f, -1.0f, 0.0f, 0.0f },
-		{ -1.0f, +1.0f, +1.0f, -1.0f, 0.0f, 0.0f },
+		{ -1.0f, -1.0f, +1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+		{ -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+		{ -1.0f, +1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+		{ -1.0f, +1.0f, +1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
 
 		// Right
-		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 0.0f },
-		{ +1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f },
-		{ +1.0f, +1.0f, -1.0f, 1.0f, 0.0f, 0.0f },
-		{ +1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 0.0f },
+		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+		{ +1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+		{ +1.0f, +1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+		{ +1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
 
 		// Front
-		{ -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
-		{ +1.0f, -1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
-		{ +1.0f, +1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
-		{ -1.0f, +1.0f, -1.0f, -1.0f, 0.0f, -1.0f },
+		{ -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f },
+		{ +1.0f, -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f },
+		{ +1.0f, +1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f },
+		{ -1.0f, +1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 1.0f },
 
 		// Back
-		{ -1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
-		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
-		{ +1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
-		{ -1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
+		{ -1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f },
+		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f },
+		{ +1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f },
+		{ -1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f },
 	};
 
 	WORD indices[] =
@@ -176,6 +179,10 @@ bool Application::OnInitialise()
 	float screenAspect = (float)800 / (float)600;
 	m_Projection = XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, screenAspect, 0.01f, 100.0f);
 
+	// Texture
+	ID3D11Resource* texResource = nullptr;
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(m_Device, L"Textures/WoodCrate01.dds", &texResource, &m_DiffuseMapSRV));
+
 	return true;
 }
 
@@ -204,6 +211,7 @@ void Application::OnRender()
 	// Bind shaders
 	m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
 	m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
+	m_DeviceContext->PSSetShaderResources(0, 1, &m_DiffuseMapSRV);
 
 	// Shader thing
 	ConstantBuffer cb;
@@ -417,6 +425,7 @@ bool Application::CreateVertexShader(std::string&& vertexShaderPath)
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
