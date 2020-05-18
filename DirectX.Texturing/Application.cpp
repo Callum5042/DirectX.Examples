@@ -5,6 +5,7 @@
 #include <SDL_messagebox.h>
 #include <DirectXMath.h>
 #include <DDSTextureLoader.h>
+#include <iostream>
 using namespace DirectX;
 
 struct SimpleVertex
@@ -32,6 +33,9 @@ struct ConstantBuffer
 
 bool Application::OnInitialise()
 {
+	m_Timer = new Timer();
+	m_Timer->Start();
+
 	if (!CreateDevice())
 		return false;
 
@@ -188,6 +192,9 @@ bool Application::OnInitialise()
 
 void Application::OnUpdate()
 {
+	m_Timer->Tick();
+	CalculateFrameStats();
+
 	static float t = 0.0f;
 	static ULONGLONG timeStart = 0;
 	ULONGLONG timeCur = GetTickCount64();
@@ -211,7 +218,6 @@ void Application::OnRender()
 	// Bind shaders
 	m_DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
 	m_DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
-	m_DeviceContext->PSSetShaderResources(0, 1, &m_DiffuseMapSRV);
 
 	// Shader thing
 	ConstantBuffer cb;
@@ -223,6 +229,7 @@ void Application::OnRender()
 	m_DeviceContext->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 
 	m_DeviceContext->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);
+	m_DeviceContext->PSSetShaderResources(0, 1, &m_DiffuseMapSRV);
 
 	// Render triangle
 	m_DeviceContext->DrawIndexed(36, 0, 0);
@@ -487,4 +494,26 @@ HWND Application::GetHwnd() const
 	SDL_Window* window = reinterpret_cast<SDL_Window*>(GetWindow()->GetWindow());
 	SDL_GetWindowWMInfo(window, &wmInfo);
 	return wmInfo.info.win.window;
+}
+
+void Application::CalculateFrameStats()
+{
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+
+	frameCnt++;
+
+	// Compute averages over one second period.
+	if ((m_Timer->TotalTime() - timeElapsed) >= 1.0f)
+	{
+		float fps = (float)frameCnt; // fps = frameCnt / 1
+		float mspf = 1000.0f / fps;
+
+		std::cout << "FPS: " << fps << '\n';
+		// m_FPS = fps;
+
+		// Reset for next average.
+		frameCnt = 0;
+		timeElapsed += 1.0f;
+	}
 }

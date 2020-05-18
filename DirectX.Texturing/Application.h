@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "WindowEvents.h"
 #include "InputEvents.h"
+#include "Timer.h"
 
 #include <d3d11_4.h>
 #include <DirectXMath.h>
@@ -58,6 +59,9 @@ private:
 
 	float m_PosX = 0.0f;
 	float m_PosZ = 0.0f;
+
+	void CalculateFrameStats();
+	Timer* m_Timer = nullptr;
 };
 
 namespace DX

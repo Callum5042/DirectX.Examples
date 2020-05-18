@@ -73,8 +73,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)-$(Platform)\</IntDir>
-    <IncludePath>E:\SDL2-2.0.10\include;E:\DirectXTK\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SDL2-2.0.10\VisualC\bin\SDL2\Release-x64;E:\SDL2-2.0.10\VisualC\bin\SDL2main\Release-x64;E:\DirectXTK\Bin\Desktop_2019\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\SDL2-2.0.10\include;D:\DirectX\dx\DirectXTK\Inc;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\SDL2-2.0.10\VisualC\bin\SDL2\Release-x64;E:\SDL2-2.0.10\VisualC\bin\SDL2main\Release-x64;D:\DirectX\dx\DirectXTK\Bin\Desktop_2019\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -155,6 +155,7 @@
     <ClCompile Include="..\Common\WindowEvents.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Engine.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="..\Common\Shader.h" />
     <ClInclude Include="..\Common\WindowEvents.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Header.hlsli" />
