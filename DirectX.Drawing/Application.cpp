@@ -1,16 +1,5 @@
 
 #include "Application.h"
-#include <SDL_syswm.h>
-#include <SDL_messagebox.h>
-
-struct SimpleVertex
-{
-	SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
-
-	float x;
-	float y;
-	float z;
-};
 
 bool DX::Application::OnInitialise()
 {

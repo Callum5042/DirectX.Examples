@@ -2,18 +2,25 @@
 
 #include "MainWindow.h"
 #include "Events.h"
+#include "Timer.h"
+#include <memory>
 
 class Engine
 {
 public:
 	Engine();
+	Engine(Engine&) = delete;
+	Engine& operator=(Engine&) = delete;
 	virtual ~Engine();
 
 	int Execute(int argc, char** argv);
 
-	static Engine* GetInstance() { return m_Instance; }
-	Events::EventDispatcher* GetEventDispatcher() const { return m_EventDispatcher; }
-	MainWindow* GetWindow() const { return m_MainWindow; }
+	static Engine* Get() { return m_Instance; }
+	constexpr std::unique_ptr <Events::EventDispatcher>& GetEventDispatcher() { return m_EventDispatcher; }
+	constexpr std::unique_ptr<MainWindow>& GetWindow() { return m_MainWindow; }
+	constexpr Timer& GetTimer() { return m_Timer; }
+
+	constexpr double GetFPS() { return m_FPS; }
 
 	void Exit();
 
@@ -27,8 +34,12 @@ private:
 
 	bool m_Running = true;
 
-	MainWindow* m_MainWindow = nullptr;
-	Events::EventDispatcher* m_EventDispatcher = nullptr;
+	std::unique_ptr<MainWindow> m_MainWindow = nullptr;
+	std::unique_ptr<Events::EventDispatcher> m_EventDispatcher = nullptr;
+	Timer m_Timer;
 
 	bool Initialise();
+
+	double m_FPS = 0;
+	void CalculateFrameStats();
 };

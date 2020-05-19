@@ -53,7 +53,7 @@ namespace Events
 		KeyDownEvent();
 		void Handle() override;
 
-		KeyData key;
+		KeyData key = {};
 	};
 
 	class KeyReleasedEvent : public IEvent
@@ -62,7 +62,7 @@ namespace Events
 		KeyReleasedEvent();
 		void Handle() override;
 
-		KeyData key;
+		KeyData key = {};
 	};
 
 	class InputListener

@@ -5,12 +5,13 @@
 #include "WindowEvents.h"
 #include "Engine.h"
 #include <iostream>
+#include <memory>
 
 namespace
 {
 	void PollSDLEvents()
 	{
-		auto dispatcher = Engine::GetInstance()->GetEventDispatcher();
+		std::unique_ptr<Events::EventDispatcher>& dispatcher = Engine::Get()->GetEventDispatcher();
 
 		SDL_Event e{};
 		while (SDL_PollEvent(&e))
@@ -38,7 +39,7 @@ namespace
 				mouseEvent->data.y = e.button.y;
 
 				dispatcher->AddEvent(mouseEvent);
-				break;	
+				break;
 			}
 
 			case SDL_MOUSEBUTTONUP:
@@ -64,28 +65,39 @@ namespace
 				break;
 			}
 
-			/*case SDL_MOUSEWHEEL:
+			case SDL_KEYUP:
 			{
-				auto mouseEvent = new Rove::Events::MouseWheelEvent();
+				if (!e.key.repeat)
+				{
+					auto keyEvent = new Events::KeyReleasedEvent();
+					keyEvent->key.key = e.key.keysym.scancode;
+
+					dispatcher->AddEvent(keyEvent);
+				}
+				break;
+			}
+
+			case SDL_MOUSEWHEEL:
+			{
+				auto mouseEvent = new Events::MouseWheelEvent();
 
 				if (e.wheel.y > 0)
 				{
-					mouseEvent->wheel = Rove::MouseWheel::WHEEL_UP;
+					mouseEvent->wheel = MouseWheel::WHEEL_UP;
 				}
 				else if (e.wheel.y < 0)
 				{
-					mouseEvent->wheel = Rove::MouseWheel::WHEEL_DOWN;
+					mouseEvent->wheel = MouseWheel::WHEEL_DOWN;
 				}
 
 				dispatcher->AddEvent(mouseEvent);
-
 				break;
 			}
 
 			case SDL_MOUSEMOTION:
 			{
-				auto mouseEvent = new Rove::Events::MouseMotionEvent();
-				mouseEvent->data.button = static_cast<Rove::MouseButton>(e.motion.state);
+				auto mouseEvent = new Events::MouseMotionEvent();
+				mouseEvent->data.button = static_cast<MouseButton>(e.motion.state);
 				mouseEvent->data.x = e.motion.x;
 				mouseEvent->data.y = e.motion.y;
 				mouseEvent->data.xrel = e.motion.xrel;
@@ -93,7 +105,7 @@ namespace
 
 				dispatcher->AddEvent(mouseEvent);
 				break;
-			}*/
+			}
 			}
 		}
 	}
