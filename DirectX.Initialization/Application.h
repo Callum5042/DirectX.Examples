@@ -2,7 +2,7 @@
 
 #include "Engine.h"
 #include "WindowEvents.h"
-
+#include "Timer.h"
 #include <d3d11_4.h>
 
 class Application : public Engine, public Events::WindowListener
@@ -11,6 +11,7 @@ public:
 	Application() = default;
 
 	bool OnInitialise() override;
+	void OnUpdate() override;
 	void OnRender() override;
 
 	// Window Events
@@ -32,6 +33,9 @@ private:
 
 	IDXGIFactory1* GetDXGIFactory();
 	HWND GetHwnd() const;
+
+	void CalculateFrameStats();
+	Timer* m_Timer = nullptr;
 };
 
 namespace DX

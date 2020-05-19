@@ -48,7 +48,7 @@
     <ClCompile Include="..\Common\WindowEvents.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
+    <ClCompile Include="..\Common\Timer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,7 +80,7 @@
     <ClInclude Include="..\Common\WindowEvents.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
+    <ClInclude Include="..\Common\Timer.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
