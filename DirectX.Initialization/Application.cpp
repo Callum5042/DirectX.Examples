@@ -27,6 +27,11 @@ void DX::Application::OnRender()
 	m_Renderer->Draw();
 }
 
+void DX::Application::OnResize(int width, int height)
+{
+	m_Renderer->Resize(width, height);
+}
+
 void DX::Application::OnQuit()
 {
 	Exit();

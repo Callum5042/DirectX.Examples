@@ -12,7 +12,11 @@ namespace DX
 
 		void Clear();
 		void Draw();
+
 		void Resize(int width, int height);
+
+		constexpr ID3D11Device* Device() { return m_Device; }
+		constexpr ID3D11DeviceContext* DeviceContext() { return m_DeviceContext; }
 
 	private:
 		ID3D11Device* m_Device = nullptr;
