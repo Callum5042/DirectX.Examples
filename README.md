@@ -2,7 +2,7 @@
 
 Sample projects for each step in DirectX 11
 
-- [ ] Initialization
+- [x] Initialization
 - [ ] Drawing
 - [ ] Texturing
 - [ ] Lighting
