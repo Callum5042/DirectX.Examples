@@ -90,8 +90,11 @@
     <ClCompile Include="..\Common\MainWindow.cpp" />
     <ClCompile Include="..\Common\WindowEvents.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Engine.h" />

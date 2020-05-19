@@ -3,10 +3,9 @@
 #include "Engine.h"
 #include "WindowEvents.h"
 #include "Renderer.h"
-
-#include <d3d11_4.h>
-#include <DirectXMath.h>
-using namespace DirectX;
+#include "Shader.h"
+#include "Model.h"
+#include "Camera.h"
 
 namespace DX
 {
@@ -19,22 +18,17 @@ namespace DX
 		void OnUpdate() override;
 		void OnRender() override;
 
+		constexpr Renderer* Renderer() { return m_Renderer; }
+		constexpr Camera* Camera() { return m_Camera; }
+
 		// Window Events
 		void OnQuit() override;
 		void OnResize(int width, int height) override;
 
 	private:
-		Renderer* m_Renderer = nullptr;
-
-		ID3D11Buffer* m_ConstantBuffer = nullptr;
-		ID3D11VertexShader* m_VertexShader = nullptr;
-		ID3D11PixelShader* m_PixelShader = nullptr;
-
-		XMMATRIX m_World;
-		XMMATRIX m_View;
-		XMMATRIX m_Projection;
-
-		bool CreateVertexShader(std::string&& vertexShaderPath);
-		bool CreatePixelShader(std::string&& pixelShaderPath);
+		DX::Renderer* m_Renderer = nullptr;
+		DX::Shader* m_Shader = nullptr;
+		DX::Camera* m_Camera = nullptr;
+		DX::Model* m_Model = nullptr;
 	};
 }
