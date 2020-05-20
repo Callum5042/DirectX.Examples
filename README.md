@@ -3,7 +3,7 @@
 Sample projects for each step in DirectX 11
 
 - [x] Initialization
-- [ ] Drawing
+- [x] Drawing
 - [ ] Texturing
 - [ ] Lighting
 - [ ] Normal Mapping
