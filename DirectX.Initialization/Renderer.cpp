@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <SDL_syswm.h>
 #include "Application.h"
+#include <iostream>
 
 namespace
 {
@@ -8,6 +9,16 @@ namespace
 	{
 		return Engine::Get()->GetWindow();
 	}
+}
+
+DX::Renderer::~Renderer()
+{
+	DX::Release(m_DepthStencilView);
+	DX::Release(m_RenderTargetView);
+	DX::Release(m_DepthStencil);
+	DX::Release(m_SwapChain);
+	DX::Release(m_DeviceContext);
+	DX::Release(m_Device);
 }
 
 bool DX::Renderer::Initialise()

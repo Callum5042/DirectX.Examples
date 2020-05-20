@@ -2,12 +2,14 @@
 #include "Application.h"
 #include <iostream>
 
+DX::Application::~Application()
+{
+}
+
 bool DX::Application::OnInitialise()
 {
-	m_Timer = new Timer();
-	m_Timer->Start();
+	m_Timer.Start();
 
-	m_Renderer = new Renderer();
 	if (!m_Renderer->Initialise())
 		return false;
 
@@ -16,7 +18,7 @@ bool DX::Application::OnInitialise()
 
 void DX::Application::OnUpdate()
 {
-	m_Timer->Tick();
+	m_Timer.Tick();
 	CalculateFrameStats();
 }
 
@@ -45,7 +47,7 @@ void DX::Application::CalculateFrameStats()
 	frameCnt++;
 
 	// Compute averages over one second period.
-	if ((m_Timer->TotalTime() - timeElapsed) >= 1.0f)
+	if ((m_Timer.TotalTime() - timeElapsed) >= 1.0f)
 	{
 		float fps = (float)frameCnt; // fps = frameCnt / 1
 		float mspf = 1000.0f / fps;

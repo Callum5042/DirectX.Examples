@@ -2,6 +2,7 @@
 
 #include "Engine.h"
 #include "WindowEvents.h"
+
 #include "Timer.h"
 #include "Renderer.h"
 
@@ -11,6 +12,7 @@ namespace DX
 	{
 	public:
 		Application() = default;
+		virtual ~Application();
 
 		bool OnInitialise() override;
 		void OnUpdate() override;
@@ -21,8 +23,9 @@ namespace DX
 		void OnResize(int width, int height) override;
 
 	private:
-		Renderer* m_Renderer = nullptr;
-		Timer* m_Timer = nullptr;
+		Timer m_Timer;
+
+		std::unique_ptr<DX::Renderer> m_Renderer = std::unique_ptr<Renderer>(new DX::Renderer());
 		void CalculateFrameStats();
 	};
 }

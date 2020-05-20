@@ -8,6 +8,9 @@ namespace DX
 	class Renderer
 	{
 	public:
+		Renderer() = default;
+		virtual ~Renderer();
+
 		bool Initialise();
 
 		void Clear();
@@ -36,6 +39,15 @@ namespace DX
 		if (FAILED(hr))
 		{
 			throw std::exception();
+		}
+	}
+
+	inline void Release(IUnknown* ref)
+	{
+		if (ref != nullptr)
+		{
+			ref->Release();
+			ref = nullptr;
 		}
 	}
 }
