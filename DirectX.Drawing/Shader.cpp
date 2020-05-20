@@ -3,6 +3,12 @@
 #include <fstream>
 #include <SDL_messagebox.h>
 
+DX::Shader::~Shader()
+{
+	DX::Release(m_VertexShader);
+	DX::Release(m_PixelShader);
+}
+
 bool DX::Shader::Load(std::string&& vertexShaderPath, std::string&& pixelShaderPath)
 {
 	if (!CreateVertexShader(std::move(vertexShaderPath)))

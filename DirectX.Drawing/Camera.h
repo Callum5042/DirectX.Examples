@@ -9,6 +9,7 @@ namespace DX
 	{
 	public:
 		Camera();
+		virtual ~Camera() = default;
 
 		void Update();
 		void Resize(int width, int height);

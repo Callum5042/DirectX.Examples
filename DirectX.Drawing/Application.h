@@ -13,6 +13,7 @@ namespace DX
 	{
 	public:
 		Application() = default;
+		virtual ~Application() = default;
 
 		bool OnInitialise() override;
 		void OnUpdate() override;

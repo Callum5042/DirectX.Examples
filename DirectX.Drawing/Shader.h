@@ -9,6 +9,7 @@ namespace DX
 	{
 	public:
 		Shader() = default;
+		virtual ~Shader();
 
 		bool Load(std::string&& vertexShaderPath, std::string&& pixelShaderPath);
 		void Use();

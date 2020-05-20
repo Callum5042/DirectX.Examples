@@ -50,8 +50,8 @@ void DX::Renderer::Draw()
 
 void DX::Renderer::Resize(int width, int height)
 {
-	m_RenderTargetView->Release();
-	m_DepthStencilView->Release();
+	DX::Release(m_RenderTargetView);
+	DX::Release(m_DepthStencilView);
 
 	DX::ThrowIfFailed(m_SwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	CreateRenderTargetView();

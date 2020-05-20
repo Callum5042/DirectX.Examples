@@ -9,6 +9,7 @@ namespace DX
 	{
 	public:
 		Model() = default;
+		virtual ~Model();
 
 		void Load();
 		void Render();

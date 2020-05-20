@@ -18,6 +18,11 @@ struct ConstantBuffer
 	DirectX::XMMATRIX mProjection;
 };
 
+DX::Model::~Model()
+{
+	DX::Release(m_ConstantBuffer);
+}
+
 void DX::Model::Load()
 {
 	// Drawing
