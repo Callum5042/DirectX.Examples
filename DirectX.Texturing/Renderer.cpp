@@ -5,7 +5,7 @@
 
 namespace
 {
-	std::unique_ptr<MainWindow>& GetWindow()
+	std::unique_ptr<MainWindow>& GetWindow() 
 	{
 		return Engine::Get()->GetWindow();
 	}
@@ -19,6 +19,9 @@ DX::Renderer::~Renderer()
 	DX::Release(m_SwapChain);
 	DX::Release(m_DeviceContext);
 	DX::Release(m_Device);
+
+	DX::Release(m_RasterStateSolid);
+	DX::Release(m_RasterStateWireframe);
 }
 
 bool DX::Renderer::Initialise()
@@ -33,6 +36,10 @@ bool DX::Renderer::Initialise()
 		return false;
 
 	SetViewport();
+
+	CreateRasterStateSolid();
+	CreateRasterStateWireframe();
+
 	return true;
 }
 
@@ -58,6 +65,18 @@ void DX::Renderer::Resize(int width, int height)
 	SetViewport();
 }
 
+void DX::Renderer::SetWireframe(bool wireframe)
+{
+	if (wireframe)
+	{
+		DeviceContext()->RSSetState(m_RasterStateWireframe);
+	}
+	else
+	{
+		DeviceContext()->RSSetState(m_RasterStateSolid);
+	}
+}
+
 bool DX::Renderer::CreateDevice()
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
@@ -76,6 +95,7 @@ bool DX::Renderer::CreateDevice()
 		return false;
 	}
 
+	DX::ThrowIfFailed(m_Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_4xMsaaQuality));
 	return true;
 }
 
@@ -90,14 +110,14 @@ bool DX::Renderer::CreateSwapChain()
 		DX::ThrowIfFailed(m_Device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&device1)));
 
 		ID3D11DeviceContext1* deviceContext1 = nullptr;
-		DX::ThrowIfFailed(m_DeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&deviceContext1)));
+		(void)m_DeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&deviceContext1));
 
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
 		sd.Width = GetWindow()->GetWidth();
 		sd.Height = GetWindow()->GetHeight();
 		sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
+		sd.SampleDesc.Count = 4;
+		sd.SampleDesc.Quality = m_4xMsaaQuality - 1;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 1;
 
@@ -119,8 +139,8 @@ bool DX::Renderer::CreateSwapChain()
 		sd.BufferDesc.RefreshRate.Denominator = 1;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.OutputWindow = GetHwnd();
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
+		sd.SampleDesc.Count = 4;
+		sd.SampleDesc.Quality = m_4xMsaaQuality - 1;
 		sd.Windowed = TRUE;
 
 		DX::ThrowIfFailed(dxgiFactory1->CreateSwapChain(m_Device, &sd, &m_SwapChain));
@@ -136,6 +156,7 @@ bool DX::Renderer::CreateSwapChain()
 	pAdapter->GetDesc1(&adapterDescription);
 	std::wcout << adapterDescription.Description << '\n';
 
+	pAdapter->Release();
 	dxgiFactory1->Release();
 	return true;
 }
@@ -161,8 +182,8 @@ bool DX::Renderer::CreateRenderTargetView()
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
+	descDepth.SampleDesc.Count = 4;
+	descDepth.SampleDesc.Quality = m_4xMsaaQuality - 1;
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
@@ -176,12 +197,11 @@ bool DX::Renderer::CreateRenderTargetView()
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
 	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	descDSV.Texture2D.MipSlice = 0;
 	DX::ThrowIfFailed(m_Device->CreateDepthStencilView(m_DepthStencil, &descDSV, &m_DepthStencilView));
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
-
 	return true;
 }
 
@@ -196,6 +216,36 @@ void DX::Renderer::SetViewport()
 	vp.TopLeftY = 0;
 
 	m_DeviceContext->RSSetViewports(1, &vp);
+}
+
+void DX::Renderer::CreateRasterStateSolid()
+{
+	D3D11_RASTERIZER_DESC rasterizerState;
+	ZeroMemory(&rasterizerState, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerState.AntialiasedLineEnable = true;
+	rasterizerState.CullMode = D3D11_CULL_FRONT;
+	rasterizerState.FillMode = D3D11_FILL_SOLID;
+	rasterizerState.DepthClipEnable = true;
+	rasterizerState.FrontCounterClockwise = true;
+	rasterizerState.MultisampleEnable = true;
+
+	DX::ThrowIfFailed(Device()->CreateRasterizerState(&rasterizerState, &m_RasterStateSolid));
+}
+
+void DX::Renderer::CreateRasterStateWireframe()
+{
+	D3D11_RASTERIZER_DESC rasterizerState;
+	ZeroMemory(&rasterizerState, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerState.AntialiasedLineEnable = true;
+	rasterizerState.CullMode = D3D11_CULL_NONE;
+	rasterizerState.FillMode = D3D11_FILL_WIREFRAME;
+	rasterizerState.DepthClipEnable = true;
+	rasterizerState.FrontCounterClockwise = true;
+	rasterizerState.MultisampleEnable = true;
+
+	DX::ThrowIfFailed(Device()->CreateRasterizerState(&rasterizerState, &m_RasterStateWireframe));
 }
 
 IDXGIFactory1* DX::Renderer::GetDXGIFactory()
