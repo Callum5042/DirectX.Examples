@@ -154,7 +154,7 @@ void DX::Model::Render()
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
-	renderer->DeviceContext()->PSSetShaderResources(0, 1, &m_DiffuseMapSRV);
+	renderer->DeviceContext()->PSSetShaderResources(0, 1, &m_DiffuseMapSRV );
 	renderer->DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	renderer->DeviceContext()->DrawIndexed(36, 0, 0);
