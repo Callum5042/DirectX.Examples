@@ -128,6 +128,14 @@ bool DX::Renderer::CreateSwapChain()
 
 	dxgiFactory1->MakeWindowAssociation(GetHwnd(), DXGI_MWA_NO_ALT_ENTER);
 
+	// Get GPU Name
+	IDXGIAdapter1* pAdapter;
+	dxgiFactory2->EnumAdapters1(0, &pAdapter);
+
+	DXGI_ADAPTER_DESC1 adapterDescription;
+	pAdapter->GetDesc1(&adapterDescription);
+	std::wcout << adapterDescription.Description << '\n';
+
 	dxgiFactory1->Release();
 	return true;
 }
