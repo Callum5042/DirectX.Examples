@@ -48,24 +48,6 @@ void DX::Camera::OnMouseMotion(MouseData&& data)
 		m_Yaw += (data.xrel * 0.25f);
 		m_Pitch += (data.yrel * 0.25f);
 
-		// Make sure it stays between 0-360
-		if (m_Pitch > 360)
-		{
-			m_Pitch = m_Pitch - 360.0f;
-		}
-		else if (m_Pitch < 0)
-		{
-			m_Pitch = m_Pitch + 360.0f;
-		}
-
-		// Make sure it stays between 0-360
-		if (m_Yaw > 360)
-		{
-			m_Yaw = m_Yaw - 360.0f;
-		}
-		else if (m_Yaw < 0)
-		{
-			m_Yaw = m_Yaw + 360.0f;
-		}
+		m_Pitch = std::clamp<float>(m_Pitch, -89, 89);
 	}
 }
