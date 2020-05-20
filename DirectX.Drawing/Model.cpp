@@ -2,9 +2,9 @@
 #include <DirectXMath.h>
 #include "Application.h"
 
-struct SimpleVertex
+struct Vertex
 {
-	SimpleVertex(float x, float y, float z) : x(x), y(y), z(z) {}
+	Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
 
 	float x;
 	float y;
@@ -26,7 +26,7 @@ DX::Model::~Model()
 void DX::Model::Load()
 {
 	// Drawing
-	SimpleVertex vertices[] =
+	Vertex vertices[] =
 	{
 		{ -1.0f, 1.0f, -1.0f },
 		{ 1.0f, 1.0f, -1.0f },
@@ -59,7 +59,7 @@ void DX::Model::Load()
 		{ -1.0f, 1.0f, 1.0f },
 	};
 
-	WORD indices[] =
+	UINT indices[] =
 	{
 		3,1,0,
 		2,1,3,
@@ -96,7 +96,7 @@ void DX::Model::Load()
 	DX::ThrowIfFailed(renderer->Device()->CreateBuffer(&vbd, &vInitData, &vertexBuffer));
 
 	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
+	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
 	renderer->DeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
@@ -115,7 +115,7 @@ void DX::Model::Load()
 	DX::ThrowIfFailed(renderer->Device()->CreateBuffer(&ibd, &iInitData, &indexBuffer));
 
 	// Set vertex buffer
-	renderer->DeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	renderer->DeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set primitive topology
 	renderer->DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

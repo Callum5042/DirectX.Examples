@@ -21,6 +21,8 @@ namespace DX
 		constexpr ID3D11Device* Device() { return m_Device; }
 		constexpr ID3D11DeviceContext* DeviceContext() { return m_DeviceContext; }
 
+		void SetWireframe(bool wireframe);
+
 	private:
 		ID3D11Device* m_Device = nullptr;
 		ID3D11DeviceContext* m_DeviceContext = nullptr;
@@ -29,10 +31,18 @@ namespace DX
 		ID3D11RenderTargetView* m_RenderTargetView = nullptr;
 		ID3D11DepthStencilView* m_DepthStencilView = nullptr;
 
+		ID3D11RasterizerState* m_RasterStateSolid = nullptr;
+		ID3D11RasterizerState* m_RasterStateWireframe = nullptr;
+
+		UINT m_4xMsaaQuality = 0;
+
 		bool CreateDevice();
 		bool CreateSwapChain();
 		bool CreateRenderTargetView();
 		void SetViewport();
+
+		void CreateRasterStateSolid();
+		void CreateRasterStateWireframe();
 
 		IDXGIFactory1* GetDXGIFactory();
 		HWND GetHwnd() const;

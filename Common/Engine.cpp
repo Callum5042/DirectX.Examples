@@ -84,7 +84,7 @@ void Engine::CalculateFrameStats()
 		float mspf = 1000.0f / fps;
 
 		m_FPS = fps;
-		std::cout << m_FPS << '\n';
+		std::cout << "FPS: " << m_FPS << '\n';
 
 		// Reset for next average.
 		frameCnt = 0;

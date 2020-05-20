@@ -2,6 +2,8 @@
 
 #include "Engine.h"
 #include "WindowEvents.h"
+#include "InputEvents.h"
+
 #include "Renderer.h"
 #include "Shader.h"
 #include "Model.h"
@@ -9,7 +11,7 @@
 
 namespace DX
 {
-	class Application : public Engine, public Events::WindowListener
+	class Application : public Engine, public Events::WindowListener, public Events::InputListener
 	{
 	public:
 		Application() = default;
@@ -26,10 +28,15 @@ namespace DX
 		void OnQuit() override;
 		void OnResize(int width, int height) override;
 
+		// Input Events
+		void OnKeyDown(Events::KeyData&& data) override;
+
 	private:
 		std::unique_ptr<DX::Renderer> m_Renderer = std::unique_ptr<DX::Renderer>(new DX::Renderer);
 		std::unique_ptr<DX::Shader> m_Shader = std::unique_ptr<DX::Shader>(new DX::Shader);
 		std::unique_ptr<DX::Camera> m_Camera = std::unique_ptr<DX::Camera>(new DX::Camera);
 		std::unique_ptr<DX::Model> m_Model = std::unique_ptr<DX::Model>(new DX::Model);
+
+		bool m_Wireframe = false;
 	};
 }

@@ -1,4 +1,3 @@
-
 #include "Application.h"
 
 bool DX::Application::OnInitialise()
@@ -27,6 +26,8 @@ void DX::Application::OnRender()
 	// Bind shaders
 	m_Shader->Use();
 
+	m_Renderer->SetWireframe(m_Wireframe);
+
 	// Render
 	m_Model->Render();
 
@@ -43,4 +44,12 @@ void DX::Application::OnResize(int width, int height)
 {
 	m_Renderer->Resize(width, height);
 	m_Camera->Resize(width, height);
+}
+
+void DX::Application::OnKeyDown(Events::KeyData&& data)
+{
+	if (data.key == SDL_SCANCODE_1)
+	{
+		m_Wireframe = !m_Wireframe;
+	}
 }
