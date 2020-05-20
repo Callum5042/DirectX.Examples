@@ -3,19 +3,13 @@
 
 bool DX::Application::OnInitialise()
 {
-	m_Renderer = new DX::Renderer();
 	if (!m_Renderer->Initialise())
 		return false;
 
-	// Create shaders
-	m_Shader = new DX::Shader();
 	if (!m_Shader->Load("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Drawing\\Debug-x64\\VertexShader.cso", "D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Drawing\\Debug-x64\\PixelShader.cso"))
 		return false;
 
-	m_Model = new DX::Model();
 	m_Model->Load();
-
-	m_Camera = new DX::Camera();
 
 	return true;
 }

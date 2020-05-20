@@ -17,6 +17,8 @@ namespace DX
 		constexpr DirectX::XMMATRIX GetProjection() { return m_Projection; }
 
 		// Mouse events
+		void OnMouseDown(MouseData&& data) override;
+		void OnMouseReleased(MouseData&& data) override;
 		void OnMouseMotion(MouseData&& data) override;
 
 	private:
@@ -28,5 +30,8 @@ namespace DX
 
 		float m_Pitch = 30.0f;
 		float m_Yaw = 0.0f;
+
+		// Last mouse coordinates
+		std::pair<int, int> m_LastMouseCoordinates;
 	};
 }

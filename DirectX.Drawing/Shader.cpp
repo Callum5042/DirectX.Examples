@@ -16,7 +16,7 @@ bool DX::Shader::Load(std::string&& vertexShaderPath, std::string&& pixelShaderP
 
 void DX::Shader::Use()
 {
-	Renderer* renderer = reinterpret_cast<Application*>(Application::GetInstance())->Renderer();
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 
 	renderer->DeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
 	renderer->DeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
@@ -38,7 +38,7 @@ bool DX::Shader::CreateVertexShader(std::string&& vertexShaderPath)
 	char* vertexbuffer = new char[vertexsize];
 	vertexFile.read(vertexbuffer, vertexsize);
 
-	Renderer* renderer = reinterpret_cast<Application*>(Application::GetInstance())->Renderer();
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	DX::ThrowIfFailed(renderer->Device()->CreateVertexShader(vertexbuffer, vertexsize, nullptr, &m_VertexShader));
 	DefineInputLayout(vertexbuffer, vertexsize);
 
@@ -62,7 +62,7 @@ bool DX::Shader::CreatePixelShader(std::string&& pixelShaderPath)
 	char* pixelbuffer = new char[pixelsize];
 	pixelFile.read(pixelbuffer, pixelsize);
 
-	Renderer* renderer = reinterpret_cast<Application*>(Application::GetInstance())->Renderer();
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	DX::ThrowIfFailed(renderer->Device()->CreatePixelShader(pixelbuffer, pixelsize, nullptr, &m_PixelShader));
 
 	delete[] pixelbuffer;
@@ -71,7 +71,7 @@ bool DX::Shader::CreatePixelShader(std::string&& pixelShaderPath)
 
 void DX::Shader::DefineInputLayout(char* vertexBuffer, int vertexBufferSize)
 {
-	Renderer* renderer = reinterpret_cast<Application*>(Application::GetInstance())->Renderer();
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{

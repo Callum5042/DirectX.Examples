@@ -75,7 +75,7 @@ void DX::Model::Load()
 		23,20,22
 	};
 
-	Renderer* renderer = reinterpret_cast<Application*>(Application::GetInstance())->Renderer();
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 
 	// Vertex duffer description
 	D3D11_BUFFER_DESC vbd = {};
@@ -129,14 +129,14 @@ void DX::Model::Load()
 
 void DX::Model::Render()
 {
-	Camera* camera = reinterpret_cast<Application*>(Application::GetInstance())->Camera();
+	auto& camera = reinterpret_cast<Application*>(Application::Get())->Camera();
 
 	ConstantBuffer cb;
 	cb.mWorld = DirectX::XMMatrixTranspose(m_World);
 	cb.mView = DirectX::XMMatrixTranspose(camera->GetView());
 	cb.mProjection = DirectX::XMMatrixTranspose(camera->GetProjection());
 
-	Renderer* renderer = reinterpret_cast<Application*>(Application::GetInstance())->Renderer();
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);

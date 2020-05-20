@@ -4,9 +4,9 @@
 
 namespace
 {
-	MainWindow* GetWindow() 
+	std::unique_ptr<MainWindow>& GetWindow()
 	{
-		return Engine::GetInstance()->GetWindow();
+		return Engine::Get()->GetWindow();
 	}
 }
 
@@ -58,14 +58,13 @@ bool DX::Renderer::CreateDevice()
 	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
 	D3D_FEATURE_LEVEL featureLevel;
-	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext));
+	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext));
 
 	if (featureLevel != D3D_FEATURE_LEVEL_11_1)
 	{
 		return false;
 	}
 
-	//DX::ThrowIfFailed(m_Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_4xMsaaQuality));
 	return true;
 }
 
@@ -163,6 +162,7 @@ bool DX::Renderer::CreateRenderTargetView()
 	DX::ThrowIfFailed(m_Device->CreateDepthStencilView(m_DepthStencil, &descDSV, &m_DepthStencilView));
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+
 	return true;
 }
 
@@ -170,7 +170,7 @@ void DX::Renderer::SetViewport()
 {
 	D3D11_VIEWPORT vp;
 	vp.Width = static_cast<FLOAT>(GetWindow()->GetWidth());
-	vp.Height = static_cast<FLOAT>(GetWindow()->GetWidth());
+	vp.Height = static_cast<FLOAT>(GetWindow()->GetHeight());
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;

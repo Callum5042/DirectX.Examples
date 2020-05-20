@@ -4,9 +4,9 @@
 
 namespace
 {
-	MainWindow* GetWindow() 
+	std::unique_ptr<MainWindow>& GetWindow() 
 	{
-		return Engine::GetInstance()->GetWindow();
+		return Engine::Get()->GetWindow();
 	}
 }
 
