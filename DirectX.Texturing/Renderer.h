@@ -34,7 +34,10 @@ namespace DX
 		ID3D11RasterizerState* m_RasterStateSolid = nullptr;
 		ID3D11RasterizerState* m_RasterStateWireframe = nullptr;
 
+		ID3D11SamplerState* m_AnisotropicSampler = nullptr;
+
 		UINT m_4xMsaaQuality = 0;
+
 
 		bool CreateDevice();
 		bool CreateSwapChain();
@@ -43,6 +46,8 @@ namespace DX
 
 		void CreateRasterStateSolid();
 		void CreateRasterStateWireframe();
+
+		void CreateAnisotropicSampler();
 
 		IDXGIFactory1* GetDXGIFactory();
 		HWND GetHwnd() const;

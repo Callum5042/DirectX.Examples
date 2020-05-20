@@ -8,16 +8,16 @@ cbuffer ConstantBuffer : register(b0)
 
 struct VS_INPUT
 {
-	float4 Pos : POSITION;
-	float2 Tex : TEXCOORD;
+	float4 Position : POSITION;
+	float2 Texture : TEXCOORD;
 };
 
 struct PS_INPUT
 {
-	float4 Pos : SV_POSITION;
-	float2 Tex : TEXCOORD;
+	float4 Position : SV_POSITION;
+	float2 Texture : TEXCOORD;
 };
 
 Texture2D gDiffuseMap : register(t0);
 
-SamplerState samAnisotropic : register(s0);
+SamplerState samplerAnisotropic : register(s0);

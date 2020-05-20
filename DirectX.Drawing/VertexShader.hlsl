@@ -4,9 +4,9 @@
 PS_INPUT main(VS_INPUT input)
 {
 	PS_INPUT output;
-	output.Pos = mul(input.Pos, World);
-	output.Pos = mul(output.Pos, View);
-	output.Pos = mul(output.Pos, Projection);
+	output.Position = mul(input.Position, World);
+	output.Position = mul(output.Position, View);
+	output.Position = mul(output.Position, Projection);
 
 	return output;
 }

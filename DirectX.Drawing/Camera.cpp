@@ -37,8 +37,11 @@ void DX::Camera::OnMouseDown(MouseData&& data)
 
 void DX::Camera::OnMouseReleased(MouseData&& data)
 {
-	SDL_SetRelativeMouseMode(SDL_FALSE);
-	SDL_WarpMouseGlobal(m_LastMouseCoordinates.first, m_LastMouseCoordinates.second);
+	if (data.button == MouseButton::MOUSE_LMASK)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		SDL_WarpMouseGlobal(m_LastMouseCoordinates.first, m_LastMouseCoordinates.second);
+	}
 }
 
 void DX::Camera::OnMouseMotion(MouseData&& data)

@@ -40,6 +40,8 @@ bool DX::Renderer::Initialise()
 	CreateRasterStateSolid();
 	CreateRasterStateWireframe();
 
+	CreateAnisotropicSampler();
+
 	return true;
 }
 
@@ -246,6 +248,23 @@ void DX::Renderer::CreateRasterStateWireframe()
 	rasterizerState.MultisampleEnable = true;
 
 	DX::ThrowIfFailed(Device()->CreateRasterizerState(&rasterizerState, &m_RasterStateWireframe));
+}
+
+void DX::Renderer::CreateAnisotropicSampler()
+{
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 8;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = 0;
+
+	DX::ThrowIfFailed(Device()->CreateSamplerState(&samplerDesc, &m_AnisotropicSampler));
+	DeviceContext()->PSSetSamplers(0, 1, &m_AnisotropicSampler);
 }
 
 IDXGIFactory1* DX::Renderer::GetDXGIFactory()
