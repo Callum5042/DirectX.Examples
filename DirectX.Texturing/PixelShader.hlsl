@@ -3,5 +3,8 @@
 
 float4 main(PS_INPUT pin) : SV_TARGET
 {
-	return gDiffuseMap.Sample(samplerAnisotropic, pin.Texture);
+	float4 colour = gDiffuseMap.Sample(samplerAnisotropic, pin.Texture);
+	clip(colour.a - 0.1f);
+
+	return colour;
 }

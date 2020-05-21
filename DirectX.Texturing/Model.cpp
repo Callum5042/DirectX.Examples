@@ -140,7 +140,8 @@ void DX::Model::Load()
 
 	// Load texture
 	ID3D11Resource* texResource = nullptr;
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\crate_diffuse.dds", &texResource, &m_DiffuseMapSRV));
+	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\crate_diffuse.dds", &texResource, &m_DiffuseMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\WireFence.dds", &texResource, &m_DiffuseMapSRV));
 	texResource->Release();
 
 	m_Texture = DirectX::XMMatrixIdentity();

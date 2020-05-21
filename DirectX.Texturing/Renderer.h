@@ -13,6 +13,8 @@ namespace DX
 
 		bool Initialise();
 
+		void SetBlendState();
+
 		void Clear();
 		void Draw();
 
