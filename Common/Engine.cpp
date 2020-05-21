@@ -53,7 +53,7 @@ bool Engine::Initialise()
 
 	// Create window
 	m_MainWindow = std::unique_ptr<MainWindow>(new MainWindow());
-	if (!m_MainWindow->Create("OpenGL", 800, 600))
+	if (!m_MainWindow->Create("DirectX", 800, 600))
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", SDL_GetError(), nullptr);
 		return false;

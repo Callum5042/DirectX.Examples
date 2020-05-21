@@ -21,6 +21,8 @@ struct ConstantBuffer
 	DirectX::XMMATRIX mWorld;
 	DirectX::XMMATRIX mView;
 	DirectX::XMMATRIX mProjection;
+
+	DirectX::XMMATRIX mTexture;
 };
 
 DX::Model::~Model()
@@ -138,8 +140,22 @@ void DX::Model::Load()
 
 	// Load texture
 	ID3D11Resource* texResource = nullptr;
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\mipmaps.dds", &texResource, &m_DiffuseMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\crate_diffuse.dds", &texResource, &m_DiffuseMapSRV));
 	texResource->Release();
+
+	m_Texture = DirectX::XMMatrixIdentity();
+}
+
+void DX::Model::Update()
+{
+	auto& timer = reinterpret_cast<Application*>(Application::Get())->GetTimer();
+
+	// Rotate
+	/*m_Texture *= DirectX::XMMatrixTranslation(-0.5f, -0.5f, 0.0f);
+	m_Texture *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(20.0f * timer.DeltaTime()));
+	m_Texture *= DirectX::XMMatrixTranslation(0.5f, 0.5f, 0.0f);
+
+	m_Texture *= DirectX::XMMatrixTranslation(0.0f, -0.5f * (float)timer.DeltaTime(), 0.0f);*/
 }
 
 void DX::Model::Render()
@@ -150,6 +166,7 @@ void DX::Model::Render()
 	cb.mWorld = DirectX::XMMatrixTranspose(m_World);
 	cb.mView = DirectX::XMMatrixTranspose(camera->GetView());
 	cb.mProjection = DirectX::XMMatrixTranspose(camera->GetProjection());
+	cb.mTexture = DirectX::XMMatrixTranspose(m_Texture);
 
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);

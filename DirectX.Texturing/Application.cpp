@@ -16,6 +16,7 @@ bool DX::Application::OnInitialise()
 void DX::Application::OnUpdate()
 {
 	m_Camera->Update();
+	m_Model->Update();
 }
 
 void DX::Application::OnRender()

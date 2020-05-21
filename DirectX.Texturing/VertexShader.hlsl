@@ -8,7 +8,7 @@ PS_INPUT main(VS_INPUT input)
 	output.Position = mul(output.Position, View);
 	output.Position = mul(output.Position, Projection);
 
-	output.Texture = input.Texture;
+	output.Texture = mul(float4(input.Texture, 1.0f, 1.0f), Texture).xy;
 
 	return output;
 }

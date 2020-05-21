@@ -253,7 +253,6 @@ void DX::Renderer::CreateRasterStateWireframe()
 void DX::Renderer::CreateAnisotropicSampler()
 {
 	D3D11_SAMPLER_DESC samplerDesc;
-	//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
 	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
