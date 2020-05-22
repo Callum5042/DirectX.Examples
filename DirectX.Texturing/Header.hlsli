@@ -5,6 +5,7 @@ cbuffer ConstantBuffer : register(b0)
 	matrix View;
 	matrix Projection;
 	matrix Texture;
+	int UseAlpha;
 }
 
 struct VS_INPUT

@@ -16,13 +16,14 @@ struct Vertex
 	float v;
 };
 
-struct ConstantBuffer
+_declspec(align(16)) struct ConstantBuffer
 {
 	DirectX::XMMATRIX mWorld;
 	DirectX::XMMATRIX mView;
 	DirectX::XMMATRIX mProjection;
 
 	DirectX::XMMATRIX mTexture;
+	int mUseAlpha;
 };
 
 DX::Model::~Model()
@@ -170,6 +171,7 @@ void DX::Model::Render()
 	cb.mView = DirectX::XMMatrixTranspose(camera->GetView());
 	cb.mProjection = DirectX::XMMatrixTranspose(camera->GetProjection());
 	cb.mTexture = DirectX::XMMatrixTranspose(m_TextureMatrix);
+	cb.mUseAlpha = m_UseAlpha;
 
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
