@@ -7,10 +7,10 @@ Sample projects for each step in DirectX 11
 - [x] Drawing
    - [x] - Multisampling (Antialiasing)
    - [x] - Wireframe
-- [ ] Texturing
+- [x] Texturing
    - [x] Filtering
    - [x] Mipmaps
-   - [ ] Animation
+   - [x] Animation
    - [x] Blending (Transparency)
 - [ ] Lighting
 - [ ] Normal Mapping
