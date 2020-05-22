@@ -59,7 +59,7 @@ void DX::Camera::OnMouseMotion(MouseData&& data)
 void DX::Camera::OnMouseWheel(Events::MouseWheelEvent* e)
 {
 	m_FOV -= static_cast<int>(e->wheel);
-	m_FOV = std::clamp<float>(m_FOV, 50.0f, 180.0f);
+	m_FOV = std::clamp<float>(m_FOV, 1.0f, 180.0f);
 
 	auto& window = Application::Get()->GetWindow();
 	Resize(window->GetWidth(), window->GetHeight());
