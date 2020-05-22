@@ -141,11 +141,11 @@ void DX::Model::Load()
 	// Load texture
 	ID3D11Resource* texResource = nullptr;
 	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\crate_diffuse.dds", &texResource, &m_DiffuseMapSRV));
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Metal_Weave_008_Base_Color.dds", &texResource, &m_DiffuseMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds", &texResource, &m_DiffuseMapSRV));
 	texResource->Release();
 	
 	texResource = nullptr;
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Metal_Weave_008_Opacity.dds", &texResource, &m_OpacityMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
 	texResource->Release();
 
 	m_Texture = DirectX::XMMatrixIdentity();
@@ -158,9 +158,9 @@ void DX::Model::Update()
 	// Rotate
 	/*m_Texture *= DirectX::XMMatrixTranslation(-0.5f, -0.5f, 0.0f);
 	m_Texture *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(20.0f * timer.DeltaTime()));
-	m_Texture *= DirectX::XMMatrixTranslation(0.5f, 0.5f, 0.0f);
+	m_Texture *= DirectX::XMMatrixTranslation(0.5f, 0.5f, 0.0f);*/
 
-	m_Texture *= DirectX::XMMatrixTranslation(0.0f, -0.5f * (float)timer.DeltaTime(), 0.0f);*/
+	//m_Texture *= DirectX::XMMatrixTranslation(0.0f, -0.5f * (float)timer.DeltaTime(), 0.0f);
 }
 
 void DX::Model::Render()

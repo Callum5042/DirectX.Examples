@@ -1,6 +1,8 @@
 #include "Renderer.h"
-#include <SDL_syswm.h>
 #include "Application.h"
+
+#include <SDL_syswm.h>
+#include <DirectXColors.h>
 #include <iostream>
 
 namespace
@@ -70,8 +72,7 @@ void DX::Renderer::SetBlendState()
 
 void DX::Renderer::Clear()
 {
-	static const float blue[] = { 0.3f, 0.5f, 0.7f, 1.0f };
-	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&blue));
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, reinterpret_cast<const float*>(&DirectX::Colors::SteelBlue));
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
