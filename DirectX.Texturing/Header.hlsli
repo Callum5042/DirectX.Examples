@@ -20,5 +20,6 @@ struct PS_INPUT
 };
 
 Texture2D gDiffuseMap : register(t0);
+Texture2D gOpacityMap : register(t1);
 
 SamplerState samplerAnisotropic : register(s0);

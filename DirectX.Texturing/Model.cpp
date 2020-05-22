@@ -141,7 +141,11 @@ void DX::Model::Load()
 	// Load texture
 	ID3D11Resource* texResource = nullptr;
 	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\crate_diffuse.dds", &texResource, &m_DiffuseMapSRV));
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\WireFence.dds", &texResource, &m_DiffuseMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Metal_Weave_008_Base_Color.dds", &texResource, &m_DiffuseMapSRV));
+	texResource->Release();
+	
+	texResource = nullptr;
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Metal_Weave_008_Opacity.dds", &texResource, &m_OpacityMapSRV));
 	texResource->Release();
 
 	m_Texture = DirectX::XMMatrixIdentity();
@@ -173,6 +177,7 @@ void DX::Model::Render()
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->PSSetShaderResources(0, 1, &m_DiffuseMapSRV );
+	renderer->DeviceContext()->PSSetShaderResources(1, 1, &m_OpacityMapSRV );
 	renderer->DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	renderer->DeviceContext()->DrawIndexed(36, 0, 0);

@@ -21,6 +21,7 @@ namespace DX
 		void OnMouseDown(MouseData&& data) override;
 		void OnMouseReleased(MouseData&& data) override;
 		void OnMouseMotion(MouseData&& data) override;
+		void OnMouseWheel(Events::MouseWheelEvent* e) override;
 
 	private:
 		DirectX::XMMATRIX m_View;

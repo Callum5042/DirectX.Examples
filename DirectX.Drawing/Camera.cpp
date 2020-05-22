@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include <SDL_mouse.h>
+#include "Application.h"
 
 DX::Camera::Camera()
 {
@@ -53,4 +54,13 @@ void DX::Camera::OnMouseMotion(MouseData&& data)
 
 		m_Pitch = std::clamp<float>(m_Pitch, -89, 89);
 	}
+}
+
+void DX::Camera::OnMouseWheel(Events::MouseWheelEvent* e)
+{
+	m_FOV -= static_cast<int>(e->wheel);
+	m_FOV = std::clamp<float>(m_FOV, 50.0f, 180.0f);
+
+	auto& window = Application::Get()->GetWindow();
+	Resize(window->GetWidth(), window->GetHeight());
 }
