@@ -11,7 +11,7 @@ Sample projects for each step in DirectX 11
    - [x] Filtering
    - [x] Mipmaps
    - [ ] Animation
-   - [ ] Blending (Transparency)
+   - [x] Blending (Transparency)
 - [ ] Lighting
 - [ ] Normal Mapping
 - [ ] Shadows
