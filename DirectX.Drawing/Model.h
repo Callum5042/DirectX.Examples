@@ -14,6 +14,8 @@ namespace DX
 		void Load();
 		void Render();
 
+		void SetWorld(float x, float y, float z);
+
 	private:
 		ID3D11Buffer* m_ConstantBuffer = nullptr;
 

@@ -138,17 +138,9 @@ void DX::Model::Load()
 	// Perspective View
 	m_World = DirectX::XMMatrixIdentity();
 
-	// Load texture
-	ID3D11Resource* texResource = nullptr;
-	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\crate_diffuse.dds", &texResource, &m_DiffuseMapSRV));
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds", &texResource, &m_DiffuseMapSRV));
-	texResource->Release();
 	
-	texResource = nullptr;
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
-	texResource->Release();
 
-	m_Texture = DirectX::XMMatrixIdentity();
+	m_TextureMatrix = DirectX::XMMatrixIdentity();
 }
 
 void DX::Model::Update()
@@ -156,11 +148,17 @@ void DX::Model::Update()
 	auto& timer = reinterpret_cast<Application*>(Application::Get())->GetTimer();
 
 	// Rotate
-	/*m_Texture *= DirectX::XMMatrixTranslation(-0.5f, -0.5f, 0.0f);
-	m_Texture *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(20.0f * timer.DeltaTime()));
-	m_Texture *= DirectX::XMMatrixTranslation(0.5f, 0.5f, 0.0f);*/
+	if (m_TextureAnimateRotate)
+	{
+		m_TextureMatrix *= DirectX::XMMatrixTranslation(-0.5f, -0.5f, 0.0f);
+		m_TextureMatrix *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(20.0f * (float)timer.DeltaTime()));
+		m_TextureMatrix *= DirectX::XMMatrixTranslation(0.5f, 0.5f, 0.0f);
+	}
 
-	//m_Texture *= DirectX::XMMatrixTranslation(0.0f, -0.5f * (float)timer.DeltaTime(), 0.0f);
+	if (m_AnimateTranslate) 
+	{
+		m_TextureMatrix *= DirectX::XMMatrixTranslation(0.0f, -0.5f * (float)timer.DeltaTime(), 0.0f);
+	}
 }
 
 void DX::Model::Render()
@@ -171,7 +169,7 @@ void DX::Model::Render()
 	cb.mWorld = DirectX::XMMatrixTranspose(m_World);
 	cb.mView = DirectX::XMMatrixTranspose(camera->GetView());
 	cb.mProjection = DirectX::XMMatrixTranspose(camera->GetProjection());
-	cb.mTexture = DirectX::XMMatrixTranspose(m_Texture);
+	cb.mTexture = DirectX::XMMatrixTranspose(m_TextureMatrix);
 
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
@@ -181,4 +179,30 @@ void DX::Model::Render()
 	renderer->DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	renderer->DeviceContext()->DrawIndexed(36, 0, 0);
+}
+
+void DX::Model::LoadTexture(std::wstring&& texture_path)
+{
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
+
+	ID3D11Resource* texResource = nullptr;
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), texture_path.c_str(), &texResource, &m_DiffuseMapSRV));
+	texResource->Release();
+}
+
+void DX::Model::LoadOpacityTexture(std::wstring&& texture_path)
+{
+	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
+
+	ID3D11Resource* texResource = nullptr;
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), texture_path.c_str(), &texResource, &m_OpacityMapSRV));
+	texResource->Release();
+
+	m_UseAlpha = true;
+}
+
+void DX::Model::SetWorld(float x, float y, float z)
+{
+	m_World = DirectX::XMMatrixTranslation(x, y, z);
 }

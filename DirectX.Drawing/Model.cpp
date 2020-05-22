@@ -148,3 +148,8 @@ void DX::Model::Render()
 
 	renderer->DeviceContext()->DrawIndexed(36, 0, 0);
 }
+
+void DX::Model::SetWorld(float x, float y, float z)
+{
+	m_World = DirectX::XMMatrixTranslation(x, y, z);
+}

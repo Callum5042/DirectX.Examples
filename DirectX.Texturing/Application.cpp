@@ -9,6 +9,8 @@ bool DX::Application::OnInitialise()
 		return false;
 
 	m_Model->Load();
+	m_Model->LoadTexture(L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds");
+	m_Model->LoadOpacityTexture(L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds");
 
 	return true;
 }
