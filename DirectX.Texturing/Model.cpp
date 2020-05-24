@@ -197,7 +197,7 @@ void DX::Model::LoadOpacityTexture(std::wstring&& texture_path)
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 
 	ID3D11Resource* texResource = nullptr;
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
+	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), texture_path.c_str(), &texResource, &m_OpacityMapSRV));
 	texResource->Release();
 

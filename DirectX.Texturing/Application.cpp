@@ -5,12 +5,13 @@ bool DX::Application::OnInitialise()
 	if (!m_Renderer->Initialise())
 		return false;
 
-	if (!m_Shader->Load("D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\VertexShader.cso", "D:\\Sources\\Testing\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\PixelShader.cso"))
+	if (!m_Shader->Load("D:\\Sources\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\VertexShader.cso", "D:\\Sources\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\PixelShader.cso"))
 		return false;
 
 	m_Model->Load();
-	m_Model->LoadTexture(L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds");
-	m_Model->LoadOpacityTexture(L"D:\\Sources\\Testing\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds");
+	m_Model->LoadTexture(L"C:/Users/Callum/Pictures/crate_diffuse_mipmap.dds");
+	//m_Model->LoadTexture(L"D:\\Sources\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds");
+	//m_Model->LoadOpacityTexture(L"D:\\Sources\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds");
 
 	return true;
 }
