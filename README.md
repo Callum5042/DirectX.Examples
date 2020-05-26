@@ -1,4 +1,4 @@
-# DirectX 11 Testing
+# DirectX 11 Examples
 
 Sample projects for each step in DirectX 11
 
