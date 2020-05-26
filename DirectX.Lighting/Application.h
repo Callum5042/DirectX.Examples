@@ -4,67 +4,39 @@
 #include "WindowEvents.h"
 #include "InputEvents.h"
 
-#include <d3d11_4.h>
-#include <DirectXMath.h>
-using namespace DirectX;
-
-class Application : public Engine, public Events::WindowListener, public Events::InputListener
-{
-public:
-	Application() = default;
-
-	bool OnInitialise() override;
-	void OnUpdate() override;
-	void OnRender() override;
-
-	// Window Events
-	void OnQuit() override;
-	void OnResize(int width, int height) override;
-
-	// Key Events
-	void OnKeyDown(Events::KeyData&& data) override;
-
-private:
-
-	ID3D11Device* m_Device = nullptr;
-	ID3D11DeviceContext* m_DeviceContext = nullptr;
-	IDXGISwapChain* m_SwapChain = nullptr;
-	ID3D11Texture2D* m_DepthStencil = nullptr;
-	ID3D11RenderTargetView* m_RenderTargetView = nullptr;
-	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
-	ID3D11Buffer* m_ConstantBuffer = nullptr;
-
-	UINT m_4xMsaaQuality;
-
-	ID3D11VertexShader* m_VertexShader = nullptr;
-	ID3D11PixelShader* m_PixelShader = nullptr;
-
-	XMMATRIX m_World;
-	XMMATRIX m_View;
-	XMMATRIX m_Projection;
-
-	bool CreateDevice();
-	bool CreateSwapChain();
-	bool CreateRenderTargetView();
-	void SetViewport();
-
-	bool CreateVertexShader(std::string&& vertexShaderPath);
-	bool CreatePixelShader(std::string&& pixelShaderPath);
-
-	IDXGIFactory1* GetDXGIFactory();
-	HWND GetHwnd() const;
-
-	float m_PosX = 0.0f;
-	float m_PosZ = 0.0f;
-};
+#include "Renderer.h"
+#include "Shader.h"
+#include "Model.h"
+#include "Camera.h"
 
 namespace DX
 {
-	inline void ThrowIfFailed(HRESULT hr)
+	class Application : public Engine, public Events::WindowListener, public Events::InputListener
 	{
-		if (FAILED(hr))
-		{
-			throw std::exception();
-		}
-	}
+	public:
+		Application() = default;
+		virtual ~Application() = default;
+
+		bool OnInitialise() override;
+		void OnUpdate() override;
+		void OnRender() override;
+
+		constexpr std::unique_ptr<DX::Renderer>& Renderer() { return m_Renderer; }
+		constexpr std::unique_ptr<DX::Camera>& Camera() { return m_Camera; }
+
+		// Window Events
+		void OnQuit() override;
+		void OnResize(int width, int height) override;
+
+		// Input Events
+		void OnKeyDown(Events::KeyData&& data) override;
+
+	private:
+		std::unique_ptr<DX::Renderer> m_Renderer = std::unique_ptr<DX::Renderer>(new DX::Renderer);
+		std::unique_ptr<DX::Shader> m_Shader = std::unique_ptr<DX::Shader>(new DX::Shader);
+		std::unique_ptr<DX::Camera> m_Camera = std::unique_ptr<DX::Camera>(new DX::Camera);
+		std::unique_ptr<DX::Model> m_Model = std::unique_ptr<DX::Model>(new DX::Model);
+
+		bool m_Wireframe = false;
+	};
 }

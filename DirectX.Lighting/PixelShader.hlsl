@@ -3,14 +3,19 @@
 
 float4 main(PS_INPUT pin) : SV_TARGET
 {
-	// Interpolating normal can unnormalize it, so normalize it.
-	//pin.NormalW = normalize(pin.NormalW);
+	float4 diffuse_texture = gDiffuseMap.Sample(samplerAnisotropic, pin.Texture);
 
+	if (UseAlpha)
+	{
+		diffuse_texture.a = gOpacityMap.Sample(samplerAnisotropic, pin.Texture);
+		clip(diffuse_texture.a - 0.1f);
+	}
 
-	float3 lightDir = float3(0.0f, 0.0f, -0.5f);
+	float3 lightDir = float3(0.3f, -0.5f, -0.7f);
 
-	float4 litColor = saturate(dot(lightDir, pin.NormalW));
-	
-	litColor.a = 1.0f;
-	return litColor;
+	float4 finalColour = diffuse_texture;
+
+	finalColour += saturate(dot(lightDir, pin.Normal)) * diffuse_texture;
+
+	return finalColour;
 }

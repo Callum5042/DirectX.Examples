@@ -46,8 +46,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)-$(Platform)\</IntDir>
-    <IncludePath>E:\SDL2-2.0.10\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SDL2-2.0.10\VisualC\bin\SDL2\Release-x64;E:\SDL2-2.0.10\VisualC\bin\SDL2main\Release-x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\SDL2-2.0.10\include;D:\DirectX\dx\DirectXTK\Inc;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\SDL2-2.0.10\VisualC\bin\SDL2\Release-x64;E:\SDL2-2.0.10\VisualC\bin\SDL2main\Release-x64;D:\DirectX\dx\DirectXTK\Bin\Desktop_2019\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -62,12 +62,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Sources\Testing\DirectX.Testing\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;d3d11.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -96,9 +97,15 @@
     <ClCompile Include="..\Common\Events.cpp" />
     <ClCompile Include="..\Common\InputEvents.cpp" />
     <ClCompile Include="..\Common\MainWindow.cpp" />
+    <ClCompile Include="..\Common\Timer.cpp" />
     <ClCompile Include="..\Common\WindowEvents.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="GeometryGenerator.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Engine.h" />
@@ -106,8 +113,15 @@
     <ClInclude Include="..\Common\Input.h" />
     <ClInclude Include="..\Common\InputEvents.h" />
     <ClInclude Include="..\Common\MainWindow.h" />
+    <ClInclude Include="..\Common\Timer.h" />
     <ClInclude Include="..\Common\WindowEvents.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="GeometryGenerator.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Header.hlsli" />

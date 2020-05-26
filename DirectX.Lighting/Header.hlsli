@@ -4,25 +4,25 @@ cbuffer ConstantBuffer : register(b0)
 	matrix World;
 	matrix View;
 	matrix Projection;
+	matrix Texture;
+	int UseAlpha;
 }
-
-struct Material
-{
-	float4 Ambient;
-	float4 Diffuse;
-	float4 Specular; // w = SpecPower
-	float4 Reflect;
-};
 
 struct VS_INPUT
 {
-	float3 PosL : POSITION;
-	float3 NormalL : NORMAL;
+	float4 Position : POSITION;
+	float3 Normal : NORMAL;
+	float2 Texture : TEXCOORD;
 };
 
 struct PS_INPUT
 {
-	float3 PosW : POSITION;
-	float4 PosH : SV_POSITION;
-	float3 NormalW : NORMAL;
+	float4 Position : SV_POSITION;
+	float3 Normal : NORMAL;
+	float2 Texture : TEXCOORD;
 };
+
+Texture2D gDiffuseMap : register(t0);
+Texture2D gOpacityMap : register(t1);
+
+SamplerState samplerAnisotropic : register(s0);
