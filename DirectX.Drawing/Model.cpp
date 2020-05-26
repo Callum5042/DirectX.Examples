@@ -1,15 +1,8 @@
 #include "Model.h"
-#include <DirectXMath.h>
 #include "Application.h"
+#include "GeometryGenerator.h"
 
-struct Vertex
-{
-	Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
-
-	float x;
-	float y;
-	float z;
-};
+#include <DirectXMath.h>
 
 _declspec(align(16)) struct ConstantBuffer
 {
@@ -25,72 +18,19 @@ DX::Model::~Model()
 
 void DX::Model::Load()
 {
-	// Drawing
-	Vertex vertices[] =
-	{
-		{ -1.0f, -1.0f, -1.0f },
-		{ -1.0f, +1.0f, -1.0f },
-		{ +1.0f, +1.0f, -1.0f },
-		{ +1.0f, -1.0f, -1.0f },
-
-		{ -1.0f, -1.0f, +1.0f },
-		{ +1.0f, -1.0f, +1.0f },
-		{ +1.0f, +1.0f, +1.0f },
-		{ -1.0f, +1.0f, +1.0f },
-
-		{ -1.0f, +1.0f, -1.0f },
-		{ -1.0f, +1.0f, +1.0f },
-		{ +1.0f, +1.0f, +1.0f },
-		{ +1.0f, +1.0f, -1.0f },
-
-		{ -1.0f, -1.0f, -1.0f },
-		{ +1.0f, -1.0f, -1.0f },
-		{ +1.0f, -1.0f, +1.0f },
-		{ -1.0f, -1.0f, +1.0f },
-
-		{ -1.0f, -1.0f, +1.0f },
-		{ -1.0f, +1.0f, +1.0f },
-		{ -1.0f, +1.0f, -1.0f },
-		{ -1.0f, -1.0f, -1.0f },
-
-		{ +1.0f, -1.0f, -1.0f },
-		{ +1.0f, +1.0f, -1.0f },
-		{ +1.0f, +1.0f, +1.0f },
-		{ +1.0f, -1.0f, +1.0f }
-	};
-
-	UINT indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3,
-
-		4, 5, 6,
-		4, 6, 7,
-
-		8, 9, 10,
-		8, 10, 11,
-
-		12, 13, 14,
-		12, 14, 15,
-
-		16, 17, 18,
-		16, 18, 19,
-
-		20, 21, 22,
-		20, 22, 23,
-	};
+	Geometry::CreateBox(1.0f, 1.0f, 1.0f, &meshdata);
 
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 
 	// Vertex duffer description
 	D3D11_BUFFER_DESC vbd = {};
 	vbd.Usage = D3D11_USAGE_DEFAULT;
-	vbd.ByteWidth = sizeof(vertices);
+	vbd.ByteWidth = sizeof(Vertex) * static_cast<UINT>(meshdata.vertices.size());
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA vInitData = {};
-	vInitData.pSysMem = vertices;
+	vInitData.pSysMem = &meshdata.vertices[0];
 
 	ID3D11Buffer* vertexBuffer = nullptr;
 	DX::ThrowIfFailed(renderer->Device()->CreateBuffer(&vbd, &vInitData, &vertexBuffer));
@@ -104,12 +44,12 @@ void DX::Model::Load()
 	// Index buffer description
 	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.ByteWidth = sizeof(indices);
+	ibd.ByteWidth = sizeof(UINT) * static_cast<UINT>(meshdata.indices.size());
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA iInitData = {};
-	iInitData.pSysMem = indices;
+	iInitData.pSysMem = &meshdata.indices[0];
 
 	ID3D11Buffer* indexBuffer = nullptr;
 	DX::ThrowIfFailed(renderer->Device()->CreateBuffer(&ibd, &iInitData, &indexBuffer));
@@ -146,7 +86,7 @@ void DX::Model::Render()
 	renderer->DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);
 
-	renderer->DeviceContext()->DrawIndexed(36, 0, 0);
+	renderer->DeviceContext()->DrawIndexed(static_cast<UINT>(meshdata.indices.size()), 0, 0);
 }
 
 void DX::Model::SetWorld(float x, float y, float z)
