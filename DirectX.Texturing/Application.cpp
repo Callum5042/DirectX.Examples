@@ -5,7 +5,7 @@ bool DX::Application::OnInitialise()
 	if (!m_Renderer->Initialise())
 		return false;
 
-	if (!m_Shader->Load("D:\\Sources\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\VertexShader.cso", "D:\\Sources\\DirectX.Testing\\bin\\DirectX.Texturing\\Debug-x64\\PixelShader.cso"))
+	if (!m_Shader->Load("D:\\Sources\\DirectX.Examples\\bin\\DirectX.Texturing\\Debug-x64\\VertexShader.cso", "D:\\Sources\\DirectX.Examples\\bin\\DirectX.Texturing\\Debug-x64\\PixelShader.cso"))
 		return false;
 
 	m_Model->Load();
