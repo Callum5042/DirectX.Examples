@@ -14,7 +14,7 @@ PS_INPUT main(VS_INPUT input)
 	output.Position = mul(float4(input.Position, 1.0f), World).xyz;
 
 	// Transform texture
-	output.Texture = mul(float4(input.Texture, 1.0f, 1.0f), Texture).xy;
+	output.Texture = mul(float4(input.Texture,  1.0f, 1.0f), Texture).xy;
 
 	return output;
 }

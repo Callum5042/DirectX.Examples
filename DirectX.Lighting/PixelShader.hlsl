@@ -14,10 +14,21 @@ float4 main(PS_INPUT pin) : SV_TARGET
 	}
 
 	// Lighting
-	float3 lightDir = float3(0.3f, -0.5f, -0.7f);
-	float4 diffuse_light = saturate(dot(lightDir, pin.Normal));
+	float3 lightDir = float3(-0.707f, 0.0f, 0.707f);
+	lightDir = -lightDir;
 
+	float4 diffuse_light = saturate(dot(lightDir, pin.Normal));
 	float4 ambient_light = float4(0.4f, 0.4f, 0.4f, 1.0f);
 
-	return (diffuse_light + ambient_light) * diffuse_texture;
-}
+	// Specular lighting
+	float3 viewDir = normalize(gEyePosW - pin.Position);
+	float3 reflectDir = reflect(-lightDir, pin.Normal);
+
+	float specularStrength = 1;
+	float3 lightColor = float3(1.0f, 1.0f, 1.0f);
+
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+	float4 specular = float4(specularStrength * spec * lightColor, 1.0f);
+
+	return (diffuse_light + ambient_light + specular) * diffuse_texture;
+} 

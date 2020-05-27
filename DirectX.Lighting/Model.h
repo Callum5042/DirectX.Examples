@@ -29,6 +29,8 @@ namespace DX
 		MeshData meshdata;
 
 		ID3D11Buffer* m_ConstantBuffer = nullptr;
+		ID3D11Buffer* m_LightBuffer = nullptr;
+
 		ID3D11ShaderResourceView* m_DiffuseMapSRV = nullptr;
 		ID3D11ShaderResourceView* m_OpacityMapSRV = nullptr;
 

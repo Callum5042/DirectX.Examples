@@ -9,7 +9,7 @@ bool DX::Application::OnInitialise()
 		return false;
 
 	m_Model->Load();
-	m_Model->LoadTexture(L"C:/Users/Callum/Pictures/crate_diffuse_mipmap.dds");
+	m_Model->LoadTexture(L"C:/Users/Callum/Pictures/crate_diffuse.dds");
 	//m_Model->LoadTexture(L"D:\\Sources\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds");
 	//m_Model->LoadOpacityTexture(L"D:\\Sources\\DirectX.Testing\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds");
 

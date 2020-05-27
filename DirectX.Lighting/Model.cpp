@@ -15,6 +15,11 @@ _declspec(align(16)) struct ConstantBuffer
 	int mUseAlpha;
 };
 
+_declspec(align(16)) struct LightBuffer
+{
+	DirectX::XMFLOAT3 mCameraPos;
+};
+
 DX::Model::~Model()
 {
 	DX::Release(m_ConstantBuffer);
@@ -72,6 +77,14 @@ void DX::Model::Load()
 	bd.CPUAccessFlags = 0;
 	DX::ThrowIfFailed(renderer->Device()->CreateBuffer(&bd, nullptr, &m_ConstantBuffer));
 
+	// Light buffer
+	D3D11_BUFFER_DESC lightBufferDesc = {};
+	lightBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = 0;
+	DX::ThrowIfFailed(renderer->Device()->CreateBuffer(&lightBufferDesc, nullptr, &m_LightBuffer));
+
 	// Perspective View
 	m_World = DirectX::XMMatrixIdentity();
 
@@ -82,6 +95,11 @@ void DX::Model::Load()
 void DX::Model::Update()
 {
 	auto& timer = reinterpret_cast<Application*>(Application::Get())->GetTimer();
+
+	// static float angle = 0.0f;
+	// angle += 1.0f * timer.DeltaTime();
+
+	//m_World *= DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(20.0f * (float)timer.DeltaTime()));
 
 	// Rotate
 	if (m_TextureAnimateRotate)
@@ -108,12 +126,21 @@ void DX::Model::Render()
 	cb.mTexture = DirectX::XMMatrixTranspose(m_TextureMatrix);
 	cb.mUseAlpha = m_UseAlpha;
 
+	LightBuffer lb;
+	lb.mCameraPos = camera->GetPosition();
+
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
+
 	renderer->DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
+	renderer->DeviceContext()->PSSetConstantBuffers(1, 1, &m_LightBuffer);
+
+
 	renderer->DeviceContext()->PSSetShaderResources(0, 1, &m_DiffuseMapSRV );
 	renderer->DeviceContext()->PSSetShaderResources(1, 1, &m_OpacityMapSRV );
+
 	renderer->DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &cb, 0, 0);
+	renderer->DeviceContext()->UpdateSubresource(m_LightBuffer, 0, nullptr, &lb, 0, 0);
 
 	renderer->DeviceContext()->DrawIndexed(static_cast<UINT>(meshdata.indices.size()), 0, 0);
 }

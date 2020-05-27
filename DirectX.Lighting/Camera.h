@@ -14,6 +14,7 @@ namespace DX
 		void Update();
 		void Resize(int width, int height);
 
+		DirectX::XMFLOAT3 GetPosition();
 		constexpr DirectX::XMMATRIX GetView() { return m_View; }
 		constexpr DirectX::XMMATRIX GetProjection() { return m_Projection; }
 

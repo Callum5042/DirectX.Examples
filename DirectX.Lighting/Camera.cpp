@@ -26,6 +26,20 @@ void DX::Camera::Resize(int width, int height)
 	m_Projection = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.01f, 100.0f);
 }
 
+DirectX::XMFLOAT3 DX::Camera::GetPosition()
+{
+	DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m_Position);
+	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_Pitch), DirectX::XMConvertToRadians(m_Yaw), 0);
+	position = XMVector3TransformCoord(position, camRotationMatrix);
+
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMStoreFloat3(&pos, position);
+
+	return pos;
+
+	//return DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+}
+
 void DX::Camera::OnMouseDown(MouseData&& data)
 {
 	if (data.button == MouseButton::MOUSE_LMASK)

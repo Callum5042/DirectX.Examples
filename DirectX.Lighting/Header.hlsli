@@ -8,6 +8,11 @@ cbuffer ConstantBuffer : register(b0)
 	int UseAlpha;
 }
 
+cbuffer LightBuffer :register(b1)
+{
+	float3 gEyePosW;
+}
+
 struct VS_INPUT
 {
 	float3 Position : POSITION;
