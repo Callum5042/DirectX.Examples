@@ -10,13 +10,14 @@ cbuffer ConstantBuffer : register(b0)
 
 struct VS_INPUT
 {
-	float4 Position : POSITION;
+	float3 Position : POSITION;
 	float2 Texture : TEXCOORD;
 };
 
 struct PS_INPUT
 {
-	float4 Position : SV_POSITION;
+	float3 Position : POSITION;
+	float4 PositionH : SV_POSITION;
 	float2 Texture : TEXCOORD;
 };
 
