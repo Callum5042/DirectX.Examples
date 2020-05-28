@@ -12,6 +12,12 @@ _declspec(align(16)) struct ConstantBuffer
 	DirectX::XMMATRIX mProjection;
 
 	DirectX::XMMATRIX mTexture;
+
+	DX::Material mMaterial;
+	/*DirectX::XMFLOAT4 mDiffuse;
+	DirectX::XMFLOAT4 mAmbient;
+	DirectX::XMFLOAT4 mSpecular;*/
+
 	int mUseAlpha;
 };
 
@@ -95,6 +101,11 @@ void DX::Model::Load()
 
 	// Texture matrix
 	m_TextureMatrix = DirectX::XMMatrixIdentity();
+
+	// Set materials
+	material.Diffuse  = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
+	material.Ambient  = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	material.Specular = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void DX::Model::Update()
@@ -129,6 +140,7 @@ void DX::Model::Render()
 	cb.mView = DirectX::XMMatrixTranspose(camera->GetView());
 	cb.mProjection = DirectX::XMMatrixTranspose(camera->GetProjection());
 	cb.mTexture = DirectX::XMMatrixTranspose(m_TextureMatrix);
+	cb.mMaterial = material;
 	cb.mUseAlpha = m_UseAlpha;
 
 	LightBuffer lb;

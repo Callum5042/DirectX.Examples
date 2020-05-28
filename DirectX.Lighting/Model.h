@@ -7,6 +7,13 @@
 
 namespace DX
 {
+	struct Material
+	{
+		DirectX::XMFLOAT4 Diffuse;
+		DirectX::XMFLOAT4 Ambient;
+		DirectX::XMFLOAT4 Specular;
+	};
+
 	class Model
 	{
 	public:
@@ -27,6 +34,7 @@ namespace DX
 		DirectX::XMMATRIX m_TextureMatrix;
 
 		MeshData meshdata;
+		Material material;
 
 		ID3D11Buffer* m_ConstantBuffer = nullptr;
 		ID3D11Buffer* m_LightBuffer = nullptr;

@@ -20,17 +20,20 @@ float4 main(PS_INPUT pin) : SV_TARGET
 	float3 lightDir = -gLightDirection.xyz;
 
 	// Diffuse light
-	float4 diffuse_light = saturate(dot(lightDir, pin.Normal)) * gLightDiffuse;
+	float4 diffuse_light = saturate(dot(lightDir, pin.Normal)) * gLightDiffuse * gDiffuse;
 
 	// Ambient light
-	float4 ambient_light = float4(0.4f, 0.4f, 0.4f, 1.0f) * gLightAmbient;
+	float4 ambient_light = gLightAmbient * gAmbient;
 
 	// Specular lighting
 	float3 viewDir = normalize(gEyePosW - pin.Position);
 	float3 reflectDir = reflect(-lightDir, pin.Normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), gLightSpecular.w);
-	float4 specular = float4(spec * gLightSpecular.xyz, 1.0f);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), gLightSpecular.w * gSpecular.w);
+	float4 specular = float4(spec * gLightSpecular.xyz * gSpecular.xyz, 1.0f);
 
 	// Final result
-	return (diffuse_light + ambient_light + specular) * diffuse_texture;
+	float4 finalColour = (diffuse_light + ambient_light + specular) * diffuse_texture;
+	finalColour.a = gDiffuse.a;
+
+	return finalColour;
 } 

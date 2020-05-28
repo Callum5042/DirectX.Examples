@@ -1,10 +1,20 @@
 
+struct Material
+{
+	
+};
+
 cbuffer ConstantBuffer : register(b0)
 {
 	matrix World;
 	matrix View;
 	matrix Projection;
 	matrix Texture;
+	
+	float4 gDiffuse;
+	float4 gAmbient;
+	float4 gSpecular; // w = SpecPower
+
 	int UseAlpha;
 }
 
