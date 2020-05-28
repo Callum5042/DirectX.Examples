@@ -17,6 +17,11 @@ _declspec(align(16)) struct ConstantBuffer
 
 _declspec(align(16)) struct LightBuffer
 {
+	DirectX::XMFLOAT4 mDiffuse;
+	DirectX::XMFLOAT4 mAmbient;
+	DirectX::XMFLOAT4 mSpecular;
+	DirectX::XMFLOAT4 mDirection;
+
 	DirectX::XMFLOAT3 mCameraPos;
 };
 
@@ -128,13 +133,16 @@ void DX::Model::Render()
 
 	LightBuffer lb;
 	lb.mCameraPos = camera->GetPosition();
+	lb.mDiffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	lb.mAmbient = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
+	lb.mSpecular = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 32.0f);
+	lb.mDirection = DirectX::XMFLOAT4(-0.707f, 0.0f, 0.707f, 1.0f);
 
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 	renderer->DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 
 	renderer->DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	renderer->DeviceContext()->PSSetConstantBuffers(1, 1, &m_LightBuffer);
-
 
 	renderer->DeviceContext()->PSSetShaderResources(0, 1, &m_DiffuseMapSRV );
 	renderer->DeviceContext()->PSSetShaderResources(1, 1, &m_OpacityMapSRV );

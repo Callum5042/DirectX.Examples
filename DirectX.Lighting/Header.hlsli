@@ -10,6 +10,11 @@ cbuffer ConstantBuffer : register(b0)
 
 cbuffer LightBuffer :register(b1)
 {
+	float4 gLightDiffuse;
+	float4 gLightAmbient;
+	float4 gLightSpecular;
+	float4 gLightDirection;
+
 	float3 gEyePosW;
 }
 
