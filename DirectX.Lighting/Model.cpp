@@ -103,7 +103,7 @@ void DX::Model::Load()
 	m_TextureMatrix = DirectX::XMMatrixIdentity();
 
 	// Set materials
-	material.Diffuse  = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
+	material.Diffuse  = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	material.Ambient  = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	material.Specular = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }

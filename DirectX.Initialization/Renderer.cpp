@@ -63,7 +63,7 @@ bool DX::Renderer::CreateDevice()
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
-		D3D_FEATURE_LEVEL_11_1,
+		//D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
 	};
 
@@ -72,7 +72,7 @@ bool DX::Renderer::CreateDevice()
 	D3D_FEATURE_LEVEL featureLevel;
 	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext));
 
-	if (featureLevel != D3D_FEATURE_LEVEL_11_1)
+	if (featureLevel != D3D_FEATURE_LEVEL_11_1 && featureLevel != D3D_FEATURE_LEVEL_11_0)
 	{
 		return false;
 	}
@@ -87,12 +87,7 @@ bool DX::Renderer::CreateSwapChain()
 	DX::ThrowIfFailed(dxgiFactory1->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2)));
 	if (dxgiFactory2 != nullptr)
 	{
-		ID3D11Device1* device1 = nullptr;
-		DX::ThrowIfFailed(m_Device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&device1)));
-
-		ID3D11DeviceContext1* deviceContext1 = nullptr;
-		DX::ThrowIfFailed(m_DeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&deviceContext1)));
-
+		// DirectX 11.1
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
 		sd.Width = GetWindow()->GetWidth();
 		sd.Height = GetWindow()->GetHeight();
@@ -104,13 +99,13 @@ bool DX::Renderer::CreateSwapChain()
 
 		IDXGISwapChain1* swapChain1 = nullptr;
 		DX::ThrowIfFailed(dxgiFactory2->CreateSwapChainForHwnd(m_Device, GetHwnd(), &sd, nullptr, nullptr, &swapChain1));
-
 		DX::ThrowIfFailed(swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_SwapChain)));
 
 		dxgiFactory2->Release();
 	}
 	else
 	{
+		// DirectX 11
 		DXGI_SWAP_CHAIN_DESC sd = {};
 		sd.BufferCount = 1;
 		sd.BufferDesc.Width = GetWindow()->GetWidth();
@@ -130,11 +125,11 @@ bool DX::Renderer::CreateSwapChain()
 	dxgiFactory1->MakeWindowAssociation(GetHwnd(), DXGI_MWA_NO_ALT_ENTER);
 
 	// Get GPU Name
-	IDXGIAdapter1* pAdapter;
-	dxgiFactory2->EnumAdapters1(0, &pAdapter);
+	IDXGIAdapter* pAdapter;
+	dxgiFactory1->EnumAdapters(0, &pAdapter);
 
-	DXGI_ADAPTER_DESC1 adapterDescription;
-	pAdapter->GetDesc1(&adapterDescription);
+	DXGI_ADAPTER_DESC adapterDescription;
+	pAdapter->GetDesc(&adapterDescription);
 	std::wcout << adapterDescription.Description << '\n';
 
 	dxgiFactory1->Release();
@@ -201,19 +196,17 @@ void DX::Renderer::SetViewport()
 
 IDXGIFactory1* DX::Renderer::GetDXGIFactory()
 {
+	IDXGIDevice* dxgiDevice = nullptr;
+	DX::ThrowIfFailed(m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice)));
+
+	IDXGIAdapter* adapter = nullptr;
+	DX::ThrowIfFailed(dxgiDevice->GetAdapter(&adapter));
+
 	IDXGIFactory1* dxgiFactory = nullptr;
-	{
-		IDXGIDevice* dxgiDevice = nullptr;
-		DX::ThrowIfFailed(m_Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice)));
+	DX::ThrowIfFailed(adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory)));
 
-		IDXGIAdapter* adapter = nullptr;
-		DX::ThrowIfFailed(dxgiDevice->GetAdapter(&adapter));
-
-		DX::ThrowIfFailed(adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory)));
-
-		adapter->Release();
-		dxgiDevice->Release();
-	}
+	adapter->Release();
+	dxgiDevice->Release();
 
 	return dxgiFactory;
 }

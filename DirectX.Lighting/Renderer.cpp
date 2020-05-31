@@ -132,30 +132,25 @@ bool DX::Renderer::CreateSwapChain()
 	DX::ThrowIfFailed(dxgiFactory1->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2)));
 	if (dxgiFactory2 != nullptr)
 	{
-		ID3D11Device1* device1 = nullptr;
-		DX::ThrowIfFailed(m_Device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&device1)));
-
-		ID3D11DeviceContext1* deviceContext1 = nullptr;
-		(void)m_DeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&deviceContext1));
-
+		// DirectX 11.1
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
 		sd.Width = GetWindow()->GetWidth();
 		sd.Height = GetWindow()->GetHeight();
 		sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		sd.SampleDesc.Count = 4;
-		sd.SampleDesc.Quality = m_4xMsaaQuality - 1;
+		sd.SampleDesc.Count = 1;
+		sd.SampleDesc.Quality = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 1;
 
 		IDXGISwapChain1* swapChain1 = nullptr;
 		DX::ThrowIfFailed(dxgiFactory2->CreateSwapChainForHwnd(m_Device, GetHwnd(), &sd, nullptr, nullptr, &swapChain1));
-
 		DX::ThrowIfFailed(swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_SwapChain)));
 
 		dxgiFactory2->Release();
 	}
 	else
 	{
+		// DirectX 11
 		DXGI_SWAP_CHAIN_DESC sd = {};
 		sd.BufferCount = 1;
 		sd.BufferDesc.Width = GetWindow()->GetWidth();
@@ -165,8 +160,8 @@ bool DX::Renderer::CreateSwapChain()
 		sd.BufferDesc.RefreshRate.Denominator = 1;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.OutputWindow = GetHwnd();
-		sd.SampleDesc.Count = 4;
-		sd.SampleDesc.Quality = m_4xMsaaQuality - 1;
+		sd.SampleDesc.Count = 1;
+		sd.SampleDesc.Quality = 0;
 		sd.Windowed = TRUE;
 
 		DX::ThrowIfFailed(dxgiFactory1->CreateSwapChain(m_Device, &sd, &m_SwapChain));
@@ -175,11 +170,11 @@ bool DX::Renderer::CreateSwapChain()
 	dxgiFactory1->MakeWindowAssociation(GetHwnd(), DXGI_MWA_NO_ALT_ENTER);
 
 	// Get GPU Name
-	IDXGIAdapter1* pAdapter;
-	dxgiFactory2->EnumAdapters1(0, &pAdapter);
+	IDXGIAdapter* pAdapter;
+	dxgiFactory1->EnumAdapters(0, &pAdapter);
 
-	DXGI_ADAPTER_DESC1 adapterDescription;
-	pAdapter->GetDesc1(&adapterDescription);
+	DXGI_ADAPTER_DESC adapterDescription;
+	pAdapter->GetDesc(&adapterDescription);
 	std::wcout << adapterDescription.Description << '\n';
 
 	pAdapter->Release();

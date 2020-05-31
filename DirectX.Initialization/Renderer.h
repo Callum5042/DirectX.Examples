@@ -21,6 +21,7 @@ namespace DX
 		ID3D11Device* m_Device = nullptr;
 		ID3D11DeviceContext* m_DeviceContext = nullptr;
 		IDXGISwapChain* m_SwapChain = nullptr;
+		IDXGISwapChain1* m_SwapChain1 = nullptr;
 		ID3D11Texture2D* m_DepthStencil = nullptr;
 		ID3D11RenderTargetView* m_RenderTargetView = nullptr;
 		ID3D11DepthStencilView* m_DepthStencilView = nullptr;
