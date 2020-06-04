@@ -49,7 +49,7 @@ void DX::Renderer::Draw()
 	m_SwapChain->Present(0, 0);
 }
 
-void DX::Renderer::Resize(int width, int height)
+void DX::Renderer::Resize(int width, int height)  
 {
 	DX::Release(m_RenderTargetView);
 	DX::Release(m_DepthStencilView);
@@ -63,14 +63,14 @@ bool DX::Renderer::CreateDevice()
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
-		//D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
 	};
 
 	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
 	D3D_FEATURE_LEVEL featureLevel;
-	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext));
+	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, NULL, D3D11_CREATE_DEVICE_DEBUG, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext));
 
 	if (featureLevel != D3D_FEATURE_LEVEL_11_1 && featureLevel != D3D_FEATURE_LEVEL_11_0)
 	{
@@ -169,15 +169,9 @@ bool DX::Renderer::CreateRenderTargetView()
 		return false;
 	}
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-	DX::ThrowIfFailed(m_Device->CreateDepthStencilView(m_DepthStencil, &descDSV, &m_DepthStencilView));
+	DX::ThrowIfFailed(m_Device->CreateDepthStencilView(m_DepthStencil, nullptr, &m_DepthStencilView));
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
-
 	return true;
 }
 

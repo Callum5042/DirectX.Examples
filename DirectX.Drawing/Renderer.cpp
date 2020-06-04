@@ -188,12 +188,7 @@ bool DX::Renderer::CreateRenderTargetView()
 		return false;
 	}
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	descDSV.Texture2D.MipSlice = 0;
-	DX::ThrowIfFailed(m_Device->CreateDepthStencilView(m_DepthStencil, &descDSV, &m_DepthStencilView));
+	DX::ThrowIfFailed(m_Device->CreateDepthStencilView(m_DepthStencil, nullptr, &m_DepthStencilView));
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	return true;

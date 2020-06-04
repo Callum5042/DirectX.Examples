@@ -137,8 +137,8 @@ bool DX::Renderer::CreateSwapChain()
 		sd.Width = GetWindow()->GetWidth();
 		sd.Height = GetWindow()->GetHeight();
 		sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
+		sd.SampleDesc.Count = 4;
+		sd.SampleDesc.Quality = m_4xMsaaQuality - 1;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 1;
 
