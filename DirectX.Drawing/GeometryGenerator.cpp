@@ -4,35 +4,35 @@ void Geometry::CreateBox(float width, float height, float depth, MeshData* mesh)
 {
 	Vertex vertices[] =
 	{
-		{ -1.0f, -1.0f, -1.0f },
-		{ -1.0f, +1.0f, -1.0f },
-		{ +1.0f, +1.0f, -1.0f },
-		{ +1.0f, -1.0f, -1.0f },
+		{ -width, -height, -depth },
+		{ -width, +height, -depth },
+		{ +width, +height, -depth },
+		{ +width, -height, -depth },
 
-		{ -1.0f, -1.0f, +1.0f },
-		{ +1.0f, -1.0f, +1.0f },
-		{ +1.0f, +1.0f, +1.0f },
-		{ -1.0f, +1.0f, +1.0f },
+		{ -width, -height, +depth },
+		{ +width, -height, +depth },
+		{ +width, +height, +depth },
+		{ -width, +height, +depth },
 
-		{ -1.0f, +1.0f, -1.0f },
-		{ -1.0f, +1.0f, +1.0f },
-		{ +1.0f, +1.0f, +1.0f },
-		{ +1.0f, +1.0f, -1.0f },
+		{ -width, +height, -depth },
+		{ -width, +height, +depth },
+		{ +width, +height, +depth },
+		{ +width, +height, -depth },
 
-		{ -1.0f, -1.0f, -1.0f },
-		{ +1.0f, -1.0f, -1.0f },
-		{ +1.0f, -1.0f, +1.0f },
-		{ -1.0f, -1.0f, +1.0f },
+		{ -width, -height, -depth },
+		{ +width, -height, -depth },
+		{ +width, -height, +depth },
+		{ -width, -height, +depth },
 
-		{ -1.0f, -1.0f, +1.0f },
-		{ -1.0f, +1.0f, +1.0f },
-		{ -1.0f, +1.0f, -1.0f },
-		{ -1.0f, -1.0f, -1.0f },
+		{ -width, -height, +depth },
+		{ -width, +height, +depth },
+		{ -width, +height, -depth },
+		{ -width, -height, -depth },
 
-		{ +1.0f, -1.0f, -1.0f },
-		{ +1.0f, +1.0f, -1.0f },
-		{ +1.0f, +1.0f, +1.0f },
-		{ +1.0f, -1.0f, +1.0f }
+		{ +width, -height, -depth },
+		{ +width, +height, -depth },
+		{ +width, +height, +depth },
+		{ +width, -height, +depth }
 	};
 
 	unsigned int indices[] =

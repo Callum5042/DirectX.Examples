@@ -9,7 +9,7 @@ float4 main(PS_INPUT pin) : SV_TARGET
 	// Apply opacity texture map
 	if (UseAlpha)
 	{
-		colour.a = gOpacityMap.Sample(samplerAnisotropic, pin.Texture).a;
+		colour.a = gOpacityMap.Sample(samplerAnisotropic, pin.Texture);
 		clip(colour.a - 0.1f);
 	}
 

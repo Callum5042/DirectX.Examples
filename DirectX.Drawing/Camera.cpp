@@ -21,7 +21,7 @@ void DX::Camera::Update()
 
 void DX::Camera::Resize(int width, int height)
 {
-	float fieldOfView = m_FOV * DirectX::XM_PI / 180;
+	float fieldOfView = DirectX::XMConvertToRadians(m_FOV);
 	float screenAspect = (float)width / (float)height;
 	m_Projection = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.01f, 100.0f);
 }

@@ -157,7 +157,7 @@ bool DX::Renderer::CreateRenderTargetView()
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Count = 1; 
 	descDepth.SampleDesc.Quality = 0;
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
