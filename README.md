@@ -2,7 +2,7 @@
 Sample projects for each step in DirectX 11 for use with RoveCoder.
 
 ## Installation
-1. To install clone the repository to a directory.
+1. To install, clone the repository to a directory.
 2. Get the latest version of SDL from: http://libsdl.org/download-2.0.php
 3. Configure the projects in the solution to include SDL headers and library
 
