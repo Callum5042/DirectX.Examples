@@ -87,13 +87,14 @@ void DX::Model::Update()
 	if (m_TextureAnimateRotate)
 	{
 		m_TextureMatrix *= DirectX::XMMatrixTranslation(-0.5f, -0.5f, 0.0f);
-		m_TextureMatrix *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(20.0f * (float)timer.DeltaTime()));
+		m_TextureMatrix *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(50.0f * (float)timer.DeltaTime()));
 		m_TextureMatrix *= DirectX::XMMatrixTranslation(0.5f, 0.5f, 0.0f);
 	}
 
 	if (m_AnimateTranslate) 
 	{
-		m_TextureMatrix *= DirectX::XMMatrixTranslation(0.0f, -0.5f * (float)timer.DeltaTime(), 0.0f);
+		float y_speed = -0.5f * (float)timer.DeltaTime();
+		m_TextureMatrix *= DirectX::XMMatrixTranslation(0.0f, y_speed, 0.0f);
 	}
 }
 
@@ -132,8 +133,8 @@ void DX::Model::LoadOpacityTexture(std::wstring&& texture_path)
 	auto& renderer = reinterpret_cast<Application*>(Application::Get())->Renderer();
 
 	ID3D11Resource* texResource = nullptr;
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\DirectX.Examples\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
-	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), texture_path.c_str(), &texResource, &m_OpacityMapSRV));
+	//DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), L"D:\\Sources\\DirectX.Examples\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds", &texResource, &m_OpacityMapSRV));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(renderer->Device(), texture_path.c_str(), &texResource, &m_OpacityMapSRV));
 	texResource->Release();
 
 	m_UseAlpha = true;

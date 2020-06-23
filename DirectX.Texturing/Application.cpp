@@ -5,13 +5,25 @@ bool DX::Application::OnInitialise()
 	if (!m_Renderer->Initialise())
 		return false;
 
-	if (!m_Shader->Load("D:\\Sources\\DirectX.Examples\\bin\\DirectX.Texturing\\Debug-x64\\VertexShader.cso", "D:\\Sources\\DirectX.Examples\\bin\\DirectX.Texturing\\Debug-x64\\PixelShader.cso"))
+	if (!m_Shader->Load("VertexShader.cso", "PixelShader.cso"))
 		return false;
 
 	m_Model->Load();
-	//m_Model->LoadTexture(L"C:/Users/Callum/Pictures/crate_diffuse_mipmap.dds");
-	m_Model->LoadTexture(L"D:\\Sources\\DirectX.Examples\\DirectX.Texturing\\Textures\\Fence003_2K_Color.dds");
-	m_Model->LoadOpacityTexture(L"D:\\Sources\\DirectX.Examples\\DirectX.Texturing\\Textures\\Fence003_2K_Opacity.dds");
+
+	// Crate Texture
+	m_Model->LoadTexture(L"Textures\\crate_diffuse_mipmap.dds");
+
+	// Transparent cage
+	//m_Model->LoadTexture(L"Textures\\Fence003_2K_Color.dds");
+	//m_Model->LoadOpacityTexture(L"Textures\\Fence003_2K_Opacity.dds");
+
+	// Translate Texture
+	//m_Model->LoadTexture(L"Textures\\water_001_diffuse.dds");
+	//m_Model->m_AnimateTranslate = true;
+
+	// Rotate Texture
+	//m_Model->LoadTexture(L"Textures\\fireball.dds");
+	//m_Model->m_TextureAnimateRotate = true;
 
 	return true;
 }

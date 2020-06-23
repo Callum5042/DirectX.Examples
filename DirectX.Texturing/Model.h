@@ -22,6 +22,10 @@ namespace DX
 
 		void SetWorld(float x, float y, float z);
 
+		// Texture settings
+		bool m_TextureAnimateRotate = false;
+		bool m_AnimateTranslate = false;
+
 	private:
 		DirectX::XMMATRIX m_World;
 		DirectX::XMMATRIX m_TextureMatrix;
@@ -33,8 +37,6 @@ namespace DX
 		ID3D11ShaderResourceView* m_OpacityMapSRV = nullptr;
 
 		// Texture settings
-		bool m_TextureAnimateRotate = false;
-		bool m_AnimateTranslate = false;
 		bool m_UseAlpha = false;
 	};
 }

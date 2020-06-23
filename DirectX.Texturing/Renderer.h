@@ -51,6 +51,8 @@ namespace DX
 
 		void CreateAnisotropicSampler();
 
+		void CreateDepthStencil();
+
 		IDXGIFactory1* GetDXGIFactory();
 		HWND GetHwnd() const;
 	};

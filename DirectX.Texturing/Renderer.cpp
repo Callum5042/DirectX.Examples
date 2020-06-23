@@ -44,6 +44,7 @@ bool DX::Renderer::Initialise()
 
 	CreateAnisotropicSampler();
 	SetBlendState();
+	CreateDepthStencil();
 
 	return true;
 }
@@ -67,7 +68,8 @@ void DX::Renderer::SetBlendState()
 	DX::ThrowIfFailed(Device()->CreateBlendState(&blendDesc, &blendState));
 
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	DeviceContext()->OMSetBlendState(blendState, blendFactor, 0xffffffff);
+	UINT sampleMask = 0xffffffff;
+	DeviceContext()->OMSetBlendState(blendState, blendFactor, sampleMask);
 }
 
 void DX::Renderer::Clear()
@@ -238,8 +240,7 @@ void DX::Renderer::CreateRasterStateSolid()
 	ZeroMemory(&rasterizerState, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizerState.AntialiasedLineEnable = true;
-	rasterizerState.CullMode = D3D11_CULL_NONE;
-	//rasterizerState.CullMode = D3D11_CULL_FRONT;
+	rasterizerState.CullMode = D3D11_CULL_FRONT;
 	rasterizerState.FillMode = D3D11_FILL_SOLID;
 	rasterizerState.DepthClipEnable = true;
 	rasterizerState.FrontCounterClockwise = true;
@@ -278,6 +279,18 @@ void DX::Renderer::CreateAnisotropicSampler()
 
 	DX::ThrowIfFailed(Device()->CreateSamplerState(&samplerDesc, &m_AnisotropicSampler));
 	DeviceContext()->PSSetSamplers(0, 1, &m_AnisotropicSampler);
+}
+
+void DX::Renderer::CreateDepthStencil()
+{
+	D3D11_DEPTH_STENCIL_DESC dssDesc = {};
+	dssDesc.DepthEnable = true;
+	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	ID3D11DepthStencilState* depthStencil = nullptr;
+	Device()->CreateDepthStencilState(&dssDesc, &depthStencil);
+	DeviceContext()->OMSetDepthStencilState(depthStencil, 0);
 }
 
 IDXGIFactory1* DX::Renderer::GetDXGIFactory()
